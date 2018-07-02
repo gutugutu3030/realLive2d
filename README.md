@@ -12,7 +12,7 @@ update.pdeのupdate関数内にpanelposをいじるコードを書くと良さ�
 Arduino実行ファイル．上記の理由に付き基本的にはこっちをいじったほうが良い
 こっちはstandalone関数内に書くと良さげ
 
-使用ライブラリ：秋月電子のPCA9685.zip
+使用ライブラリ：秋月電子のPCA9685.zip，[Skywriter Arduino Library](https://github.com/pimoroni/skywriter-hat/tree/master/arduino)
 
 ## 3dmodels
 使用した3Dモデル一覧
