@@ -16,4 +16,4 @@ Arduino実行ファイル．上記の理由に付き基本的にはこっちを�
 
 こっちはstandalone関数内に書くと良さげ
 
-使用ライブラリ：秋月電子のPCA9685.zip
+使用ライブラリ：秋月電子のPCA9685.zip，[Skywriter Arduino Library](https://github.com/pimoroni/skywriter-hat/tree/master/arduino)
