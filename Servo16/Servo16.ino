@@ -1,5 +1,7 @@
 #include <Wire.h>
 #include <PCA9685.h>            //PCA9685用ヘッダーファイル（秋月電子通商作成）
+#include <skywriter.h>
+
 
 PCA9685 pwm = PCA9685(0x40);    //PCA9685のアドレス指定（アドレスジャンパ未接続時）
 
@@ -22,7 +24,8 @@ void setup() {
   Serial.begin(57600);
   pwm.begin();                   //初期設定 (アドレス0x40用)
   pwm.setPWMFreq(20);            //PWM周期を60Hzに設定 (アドレス0x40用)
-  
+  Skywriter.begin(4, 5);
+  Skywriter.onXYZ(handle_xyz);
 }
 
 unsigned long lastReceivingTime = 0;
