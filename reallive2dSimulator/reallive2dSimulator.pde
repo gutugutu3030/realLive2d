@@ -4,6 +4,7 @@ import controlP5.*;
 
 boolean useSerial=false;
 boolean visibleMeasure=true;
+boolean visibleServoController=false;
 
 ControlP5 cp5;
 Serial arduino;
@@ -47,18 +48,20 @@ void setup() {
   backimg=loadImage(dataPath("-1.png"));
 
   cp5=new ControlP5(this);
-  //  cp5.addSlider("upperHeight")
-  //    .setPosition(0, 0)
-  //      .setRange(0, height-100)
-  //        .setSize(width, 50);
-  //  cp5.addSlider("upperWidth")
-  //    .setPosition(0, 50)
-  //      .setRange(0, width)
-  //        .setSize(width, 50);
-  //  cp5.addSlider("bottomWidth")
-  //    .setPosition(0, 100)
-  //      .setRange(servoW, width)
-  //        .setSize(width, 50);
+  if (visibleMeasure) {
+    cp5.addSlider("upperHeight")
+      .setPosition(0, 0)
+        .setRange(0, height-100)
+          .setSize(width, 50);
+    cp5.addSlider("upperWidth")
+      .setPosition(0, 50)
+        .setRange(0, width)
+          .setSize(width, 50);
+    cp5.addSlider("bottomWidth")
+      .setPosition(0, 100)
+        .setRange(servoW, width)
+          .setSize(width, 50);
+  }
 
 
   //  cp5.addSlider("panelX")
@@ -70,13 +73,15 @@ void setup() {
   //      .setRange(0, 100)
   //        .setSize(width, 50);
 
-  for (int i=0; i<panelpos.length*2; i++) {
-    cp5.addSlider("panel"+(i%2==0?"X_":"Y_")+(i/2))
-      .setPosition(100+width/2*(i%2), height-400+i/2*100)
-        .setRange(0, 100)
-          .setSize(width/2-100, 100)
-            .setValue(panelpos[i/2][i%2])
-              .setId(i);
+  if (visibleServoController) {
+    for (int i=0; i<panelpos.length*2; i++) {
+      cp5.addSlider("panel"+(i%2==0?"X_":"Y_")+(i/2))
+        .setPosition(100+width/2*(i%2), height-400+i/2*100)
+          .setRange(0, 100)
+            .setSize(width/2-100, 100)
+              .setValue(panelpos[i/2][i%2])
+                .setId(i);
+    }
   }
 
   if (useSerial) {
@@ -95,7 +100,7 @@ void draw() {
   //  upperRight.y=upperHeight;
   //  bottomLeft.x=width/2-bottomWidth/2-servoH/2;
   //  bottomRight.x=width/2+bottomWidth/2-servoH/2;
-  
+
   update();
 
   for (int i=0; i<layer.length; i++) {
@@ -120,14 +125,14 @@ void draw() {
   float pw=upperWidth+servoW-armL;
   float ph=panelHeight;
   rect(px, py, pw, ph);
-  if(backimg!=null){
-    image(backimg,px,py,pw,ph);
+  if (backimg!=null) {
+    image(backimg, px, py, pw, ph);
   }
-  for (int i=layer.length-1;i>=0;i--) {
+  for (int i=layer.length-1; i>=0; i--) {
     PVector pos[]=layer[i].getPanelParams();
     rect(pos[0].x, pos[0].y, pos[1].x, pos[1].y);
-    if(img[i]!=null){
-      image(img[i],pos[0].x, pos[0].y, pos[1].x, pos[1].y);
+    if (img[i]!=null) {
+      image(img[i], pos[0].x, pos[0].y, pos[1].x, pos[1].y);
     }
   }
 
