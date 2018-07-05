@@ -20,7 +20,7 @@ void standalone() {
   }
 
   writeLayer();
-  delay(100);
+  delay(50);
 }
 
 
@@ -28,6 +28,9 @@ void standalone() {
 unsigned int oldx, oldy, oldz;
 float alpha=0.5;
 float fingerAngle=0;
+
+unsigned long lastFingerTime = 0;
+
 
 void handle_xyz(unsigned int x, unsigned int y, unsigned int z) {
   if (oldx == x && oldy == y && oldz == z) {
@@ -43,4 +46,5 @@ void handle_xyz(unsigned int x, unsigned int y, unsigned int z) {
   Serial.print(fingerX);
   Serial.print(" ");
   Serial.println(fingerY);
+  lastFingerTime = millis();
 }
