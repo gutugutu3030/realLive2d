@@ -13,8 +13,8 @@ class Layer {
     upperRight.x=width/2+upperWidth/2;
     upperLeft.y=bottomLeft.y+servoH-upperHeight-servoW;
     upperRight.y=bottomLeft.y+servoH-upperHeight-servoW;
-    bottomLeft.x=width/2-bottomWidth/2-servoW/2-armL;
-    bottomRight.x=width/2+bottomWidth/2-servoW/2-armL;
+    bottomLeft.x=width/2-bottomWidth/2-servoW/2-armL+50;
+    bottomRight.x=width/2+bottomWidth/2-servoW/2-armL+50;
   }
   void update(int panelX, int panelY) {
     upperLeft.setAngle(acos(1.0*(panelX+100.0)/armL));
