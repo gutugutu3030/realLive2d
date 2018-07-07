@@ -57,10 +57,16 @@ module servo4_rect(l=servoW*4+waku*2){
 }
 
 
-module hikkake(l=servoW*4,d=10){
-    for(i=[0:4]){
-        translate([-waku,waku+servoH,(2.4+5)*i+15.8+2.4])
-        cube([l,d,2]);  
+module hikkake(l=servoW*4,d=10,fixPos=true,haba=0.8,thin=2){
+    x=0;
+    if(fixPos){
+        x=-waku;
+    }
+    for(i=[1:5]){
+        translate([0,-d,(2.4+5)*i+15.8+2.4-thin])
+            cube([l,d,thin]);  
+        translate([0,-d,(2.4+5)*i+15.8+2.4+haba])
+            cube([l,d,thin]);  
     }
 
 }
