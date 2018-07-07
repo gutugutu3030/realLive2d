@@ -168,9 +168,9 @@ void draw() {
     line(r, height*2/3, width/2-bottomWidth/2-servoW/2-armL-servoW*3+50, height*2/3);
     text(""+(width/2-bottomWidth/2-servoW/2-armL-servoW*3+50-r), 
     width/2-bottomWidth/2-servoW/2-armL-servoW*3+50, height*2/3);
-    line(width/2+bottomWidth/2-servoW/2-armL+servoW*4+50, height*2/3, width-r, height*2/3);
-    text(""+(width-r - (width/2+bottomWidth/2-servoW/2-armL+servoW*4+50)), 
-    width/2+bottomWidth/2-servoW/2-armL+servoW*4+50, height*2/3);
+    line( width/2-bottomWidth/2-servoW/2-armL-servoW*3+50, height*2/3+50, width-r, height*2/3+50);
+    text(""+(width-r - (width/2-bottomWidth/2-servoW/2-armL-servoW*3+50)), 
+    width/2+bottomWidth/2-servoW/2-armL+servoW*4+50, height*2/3+50);
     line(width/2-bottomWidth/2-servoW*7/2-armL+50,height-230,width/2+bottomWidth/2-servoW/2-armL+50,height-230);
     text(""+((width/2+bottomWidth/2-servoW/2-armL+50)-(width/2-bottomWidth/2-servoW*7/2-armL+50)),width/2+bottomWidth/2-servoW/2-armL+50,height-230);
     //  line(mouseX,0,mouseX,height);
