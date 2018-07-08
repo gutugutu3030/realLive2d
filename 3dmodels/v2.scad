@@ -52,3 +52,6 @@ difference(){
         
     }
 }
+
+//translate([0,110-waku,0])
+//cube([1,1,300]);

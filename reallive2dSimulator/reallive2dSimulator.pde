@@ -2,9 +2,9 @@ import java.util.*;
 import processing.serial.*;
 import controlP5.*;
 
-boolean useSerial=false;
-boolean visibleMeasure=true;
-boolean allControll=true;
+boolean useSerial=false;//シリアルでservo16におくるかどうか
+boolean visibleMeasure=true;//各種サイズをひょうじするかどうか
+boolean allControll=true;//
 
 ControlP5 cp5;
 Serial arduino;
@@ -33,7 +33,7 @@ static final int armL=300;
 Layer layer[];
 
 void setup() {
-  size(2000, 1600);
+  size(2000, 1600+400);
   //  upperLeft=new Servo(servos, 100, 200, -HALF_PI, YOKO2);
   //  upperRight=new Servo(servos, width-100-servoH, 200, PI, YOKO1);
   //  bottomLeft=new Servo(servos, 500, 1200, 0, TATE);
@@ -99,6 +99,8 @@ void setup() {
 }
 
 void draw() {
+  pushMatrix();
+  translate(0,400);
   background(255);
   //  upperLeft.setAngle(HALF_PI-acos(panelX/armL));
   //  upperRight.setAngle(acos(1-panelX/armL));
@@ -151,6 +153,13 @@ void draw() {
       image(img[i], pos[0].x, pos[0].y, pos[1].x, pos[1].y);
     }
   }
+  
+  pushMatrix();
+  translate(width/2-bottomWidth/2-servoW*7/2-armL+50,1200+servoH);
+  scale(1,-1);
+  drawArm();
+  drawSeparator(1);
+  popMatrix();
 
   if (visibleMeasure) {
     fill(0);
@@ -175,6 +184,7 @@ void draw() {
     text(""+((width/2+bottomWidth/2-servoW/2-armL+50)-(width/2-bottomWidth/2-servoW*7/2-armL+50)),width/2+bottomWidth/2-servoW/2-armL+50,height-230);
     //  line(mouseX,0,mouseX,height);
   }
+  popMatrix();
 }
 
 
@@ -232,6 +242,8 @@ class Servo {
       break;
     }
     stroke(0);
+    noFill();
+    rect(x-40, y-40, w+80, h+80);
     fill(100, 100, 255);
     rect(x, y, w, h);
     strokeWeight(10);
