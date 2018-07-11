@@ -25,5 +25,9 @@ use [ReSpeaker USB 4 Mic Array](https://github.com/respeaker/usb_4_mic_array/)
 | name | 説明 |
 ----|----
 | hone.stl | サーボモータのホーン拡張用 |
-| servoHone.stl | hone.stlの元データ |
-| arm.stl | ダミーサーボ　手前のレイヤーを分けるプラバン保持用　なお元データはPCがクラッシュして消えた |
+| servoHone.scad | hone.stlの元データ |
+| line.scad | 4連サーボのデータ　サーボのモデルデータ込 |
+| v2.scad | v2プレートのデータ　要line.scad |
+| v2.stl | v2プレートのデータ |
+| v2-arm.scad | セパレータ（透明の板）を保持するアームfor v2 の元データ|
+| v2-arm.stl | セパレータを保持するアームfor v2|
