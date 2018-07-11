@@ -13,8 +13,8 @@ PCA9685 pwm = PCA9685(0x40);    //PCA9685のアドレス指定（アドレスジ
 int defaultAngle[16] = {20, 28, 28, 29, 19, 26, 35, 30, 25, 34, 37, 36, 22, 33, 32, 28};
 
 //0 - 100
-int layerX[LAYER_LENGTH]={50,50,50,50};
-int layerY[LAYER_LENGTH]={50,50,50,50};
+int layerX[LAYER_LENGTH] = {50, 50, 50, 50};
+int layerY[LAYER_LENGTH] = {50, 50, 50, 50};
 
 
 //開始命令＋終了命令：0
@@ -36,20 +36,10 @@ void loop() {
   if (Serial.available()) {
     byte buffer[BUFFERSIZE];
     int length = Serial.readBytesUntil(0, buffer, BUFFERSIZE);
-    for (int i = 0; i < length; i++) {
-      if (buffer[i] == 0) {
-        break;
-      }
-//      int angle = buffer[i] - 1;
-//      if (0 <= angle && angle < 90) {
-//        servo_write(i, angle + defaultAngle[i]);
-//      }
-        if(i%2==0){
-          layerX[i/2]=buffer[i]-1;
-        }else{
-          layerY[i/2]=buffer[i]-1;          
-        }
-        writeLayer();
+    if(length>=2){
+      int x=buffer[0]-1;
+      int y=buffer[1]-1;
+      setLayerXY(x/100.0-0.5,y/100.0-0.5);
     }
     lastReceivingTime = millis();
   }
