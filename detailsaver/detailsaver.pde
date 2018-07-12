@@ -7,20 +7,16 @@ boolean usingSerial=true;
 Serial arduino;
 ControlP5 cp5;
 
-int angle0[]=new int[16];
+int angle0[]=new int[]{29, 35, 24, 25, 16, 24, 30, 23, 22, 23, 0, 23, 26, 13, 25, 31};
 
 int index=0;
 
 void setup() {
   size(1600, 1600);
   if (usingSerial) {
-    arduino=new Serial(this, "COM8", 57600);
+    arduino=new Serial(this, "COM3", 57600);
   }
   cp5=new ControlP5(this);
-  for (int i=0; i<angle0.length; i++) {
-    angle0[i]=30;
-  }     
-
   for (int i=0; i<angle0.length; i++) {
     cp5.addSlider("servo_"+i)
       .setPosition(100, 100*i)
