@@ -2,9 +2,9 @@ import java.util.*;
 import processing.serial.*;
 import controlP5.*;
 
-boolean useSerial=false;
-boolean visibleMeasure=true;
-boolean visibleServoController=false;
+boolean useSerial=false;//シリアルでservo16におくるかどうか
+boolean visibleMeasure=true;//各種サイズをひょうじするかどうか
+boolean allControll=true;//
 
 ControlP5 cp5;
 Serial arduino;
@@ -19,9 +19,9 @@ int panelX=0;
 int panelpos[][]=new int[4][2];
 PImage img[]=new PImage[4];
 PImage backimg=null;
-int upperHeight=800, bottomWidth=400;
-int upperWidth=1600;
-int panelHeight=1418;
+int upperHeight=500, bottomWidth=280;
+int upperWidth=1400;
+int panelHeight=1218;
 
 static final int TATE=0;
 static final int YOKO1=1;
@@ -33,7 +33,7 @@ static final int armL=300;
 Layer layer[];
 
 void setup() {
-  size(2000, 1600);
+  size(2000, 1600+400);
   //  upperLeft=new Servo(servos, 100, 200, -HALF_PI, YOKO2);
   //  upperRight=new Servo(servos, width-100-servoH, 200, PI, YOKO1);
   //  bottomLeft=new Servo(servos, 500, 1200, 0, TATE);
@@ -73,7 +73,7 @@ void setup() {
   //      .setRange(0, 100)
   //        .setSize(width, 50);
 
-  if (visibleServoController) {
+  if (!allControll) {
     for (int i=0; i<panelpos.length*2; i++) {
       cp5.addSlider("panel"+(i%2==0?"X_":"Y_")+(i/2))
         .setPosition(100+width/2*(i%2), height-400+i/2*100)
@@ -82,6 +82,15 @@ void setup() {
               .setValue(panelpos[i/2][i%2])
                 .setId(i);
     }
+  } else {
+    cp5.addSlider("panelX")
+      .setPosition(0, height-100)
+        .setRange(0, 100)
+          .setSize(width, 50);
+    cp5.addSlider("panelY")
+      .setPosition(0, height-50)
+        .setRange(0, 100)
+          .setSize(width, 50);
   }
 
   if (useSerial) {
@@ -90,6 +99,8 @@ void setup() {
 }
 
 void draw() {
+  pushMatrix();
+  translate(0,400);
   background(255);
   //  upperLeft.setAngle(HALF_PI-acos(panelX/armL));
   //  upperRight.setAngle(acos(1-panelX/armL));
@@ -105,7 +116,13 @@ void draw() {
 
   for (int i=0; i<layer.length; i++) {
     layer[i].setPos(upperHeight+i*servoW, upperWidth, bottomWidth+i*servoW*2);
-    layer[i].update(panelpos[i][0], panelpos[i][1]);
+      if(allControll){
+        layer[i].update(panelX, panelY);
+      }else{
+        layer[i].update(panelpos[i][0], panelpos[i][1]);
+      }
+
+    
   }
   if (useSerial) {
     for (int i=0; i<layer.length; i++) {
@@ -130,11 +147,19 @@ void draw() {
   }
   for (int i=layer.length-1; i>=0; i--) {
     PVector pos[]=layer[i].getPanelParams();
+    println(pos[1].x+" "+ pos[1].y);
     rect(pos[0].x, pos[0].y, pos[1].x, pos[1].y);
     if (img[i]!=null) {
       image(img[i], pos[0].x, pos[0].y, pos[1].x, pos[1].y);
     }
   }
+  
+  pushMatrix();
+  translate(width/2-bottomWidth/2-servoW*7/2-armL+50,1200+servoH);
+  scale(1,-1);
+  drawArm();
+  drawSeparator(1);
+  popMatrix();
 
   if (visibleMeasure) {
     fill(0);
@@ -145,16 +170,21 @@ void draw() {
     stroke(255, 0, 0);
     line(width/2, 0, width/2, height);
     float r=(width-upperWidth)/2-servoH;
+    line(r,height/2-50,width-r-servoH,height/2-50);
+    text(""+(width-r*2-servoH), r, height/2-50);
     line(r, height/2, width-r, height/2);
     text(""+(width-r*2), width/2, height/2);
-    line(r, height*2/3, width/2-bottomWidth/2-servoW/2-armL-servoW*3, height*2/3);
-    text(""+(width/2-bottomWidth/2-servoW/2-armL-servoW*3-r), 
-    width/2-bottomWidth/2-servoW/2-armL-servoW*3, height*2/3);
-    line(width/2+bottomWidth/2-servoW/2-armL+servoW*4, height*2/3, width-r, height*2/3);
-    text(""+(width-r - (width/2+bottomWidth/2-servoW/2-armL+servoW*4)), 
-    width/2+bottomWidth/2-servoW/2-armL+servoW*4, height*2/3);
+    line(r, height*2/3, width/2-bottomWidth/2-servoW/2-armL-servoW*3+50, height*2/3);
+    text(""+(width/2-bottomWidth/2-servoW/2-armL-servoW*3+50-r), 
+    width/2-bottomWidth/2-servoW/2-armL-servoW*3+50, height*2/3);
+    line( width/2-bottomWidth/2-servoW/2-armL-servoW*3+50, height*2/3+50, width-r, height*2/3+50);
+    text(""+(width-r - (width/2-bottomWidth/2-servoW/2-armL-servoW*3+50)), 
+    width/2+bottomWidth/2-servoW/2-armL+servoW*4+50, height*2/3+50);
+    line(width/2-bottomWidth/2-servoW*7/2-armL+50,height-230,width/2+bottomWidth/2-servoW/2-armL+50,height-230);
+    text(""+((width/2+bottomWidth/2-servoW/2-armL+50)-(width/2-bottomWidth/2-servoW*7/2-armL+50)),width/2+bottomWidth/2-servoW/2-armL+50,height-230);
     //  line(mouseX,0,mouseX,height);
   }
+  popMatrix();
 }
 
 
@@ -212,6 +242,8 @@ class Servo {
       break;
     }
     stroke(0);
+    noFill();
+    rect(x-40, y-40, w+80, h+80);
     fill(100, 100, 255);
     rect(x, y, w, h);
     strokeWeight(10);

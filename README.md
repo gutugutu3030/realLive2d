@@ -14,11 +14,20 @@ Arduino実行ファイル．上記の理由に付き基本的にはこっちを�
 
 使用ライブラリ：秋月電子のPCA9685.zip，[Skywriter Arduino Library](https://github.com/pimoroni/skywriter-hat/tree/master/arduino)
 
+## DOASerial.py
+python2.7必須
+Arduinoのシリアルポートに設定することで聴覚を与えることができる
+use [ReSpeaker USB 4 Mic Array](https://github.com/respeaker/usb_4_mic_array/)
+
 ## 3dmodels
 使用した3Dモデル一覧
 
 | name | 説明 |
 ----|----
 | hone.stl | サーボモータのホーン拡張用 |
-| servoHone.stl | hone.stlの元データ |
-| arm.stl | ダミーサーボ　手前のレイヤーを分けるプラバン保持用　なお元データはPCがクラッシュして消えた |
+| servoHone.scad | hone.stlの元データ |
+| line.scad | 4連サーボのデータ　サーボのモデルデータ込 |
+| v2.scad | v2プレートのデータ　要line.scad |
+| v2.stl | v2プレートのデータ |
+| v2-arm.scad | セパレータ（透明の板）を保持するアームfor v2 の元データ|
+| v2-arm.stl | セパレータを保持するアームfor v2|
