@@ -10,7 +10,7 @@ PCA9685 pwm = PCA9685(0x40);    //PCA9685のアドレス指定（アドレスジ
 #define BUFFERSIZE 100
 #define LAYER_LENGTH 4
 
-int defaultAngle[16] = {20, 28, 28, 29, 19, 26, 35, 30, 25, 34, 37, 36, 22, 33, 32, 28};
+int defaultAngle[16] = {29, 35, 24, 25, 16, 24, 30, 23, 22, 23, 0, 23, 26, 13, 25, 31};
 
 //0 - 100
 int layerX[LAYER_LENGTH] = {50, 50, 50, 50};

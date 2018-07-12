@@ -16,16 +16,20 @@ void setup() {
   Serial.begin(57600);
   pwm.begin();                   //初期設定 (アドレス0x40用)
   pwm.setPWMFreq(20);            //PWM周期を60Hzに設定 (アドレス0x40用)
+  delay(500);
+  for (int i = 0; i < 16; i++) {
+    servo_write(i, 30);
+  }
 }
 
 void loop() {
   if (Serial.available()) {
     byte buffer[BUFFERSIZE];
     int length = Serial.readBytesUntil(0, buffer, BUFFERSIZE);
-    if(length>=16){
-      for(int i=0;i<16;i++){
-        servo_write(i,buffer[i]-1);
-      }      
+    if (length >= 16) {
+      for (int i = 0; i < 16; i++) {
+        servo_write(i, buffer[i] - 1);
+      }
     }
   }
 }

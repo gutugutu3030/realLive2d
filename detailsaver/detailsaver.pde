@@ -2,7 +2,7 @@ import processing.serial.*;
 import controlP5.*;
 import java.util.*;
 
-boolean usingSerial=false;
+boolean usingSerial=true;
 
 Serial arduino;
 ControlP5 cp5;
@@ -14,7 +14,7 @@ int index=0;
 void setup() {
   size(1600, 1600);
   if (usingSerial) {
-    arduino=new Serial(this, "COM3", 57600);
+    arduino=new Serial(this, "COM8", 57600);
   }
   cp5=new ControlP5(this);
   for (int i=0; i<angle0.length; i++) {
