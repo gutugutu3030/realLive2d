@@ -1,3 +1,6 @@
 [submodule "usb_4_mic_array"]
 	path = usb_4_mic_array
 	url = https://github.com/respeaker/usb_4_mic_array.git
+[submodule "SparkFun_GridEYE_Arduino_Library"]
+	path = SparkFun_GridEYE_Arduino_Library
+	url = https://github.com/sparkfun/SparkFun_GridEYE_Arduino_Library.git

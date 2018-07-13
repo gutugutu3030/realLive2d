@@ -1,9 +1,12 @@
 #include <Wire.h>
+#include <SparkFun_GridEYE_Arduino_Library.h>
 #include <PCA9685.h>            //PCA9685用ヘッダーファイル（秋月電子通商作成）
 #include <skywriter.h>
 
 
 PCA9685 pwm = PCA9685(0x40);    //PCA9685のアドレス指定（アドレスジャンパ未接続時）
+
+GridEYE grideye;//サーモセンサ
 
 #define SERVOMIN 51            //最小パルス幅 (標準的なサーボパルスに設定)
 #define SERVOMAX 255            //最大パルス幅 (標準的なサーボパルスに設定)
@@ -28,6 +31,8 @@ void setup() {
   delay(500);
   Skywriter.begin(4, 5);
   Skywriter.onXYZ(handle_xyz);
+  delay(50);
+  grideye.begin();
 }
 
 unsigned long lastReceivingTime = 0;
