@@ -14,6 +14,10 @@ Arduino実行ファイル．上記の理由に付き基本的にはこっちを�
 
 使用ライブラリ：秋月電子のPCA9685.zip，[Skywriter Arduino Library](https://github.com/pimoroni/skywriter-hat/tree/master/arduino)，[SparkFun GridEYE Arduino Library](https://github.com/sparkfun/SparkFun_GridEYE_Arduino_Library)
 
+## deteilsaver
+キャリブレーション用システム
+Servo16_deteilsaverを書き込んだ状態で起動することで，サーボの角度のキャリブレーションができる
+
 ## DOASerial.py
 python2.7必須
 Arduinoのシリアルポートに設定することで聴覚を与えることができる
