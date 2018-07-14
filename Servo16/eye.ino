@@ -1,6 +1,6 @@
-#define HOT_THRESHOLD 1
+#define HOT_THRESHOLD 35
 
-void getHotPixel(float *x,float *y){
+bool getHotPixel(float *x,float *y){
   float val=0;
   int index=-1;
   for(unsigned char i = 0; i < 64; i++){
@@ -11,11 +11,13 @@ void getHotPixel(float *x,float *y){
       }
   }
   if(index==-1){
-    return;
+    return false;
   }
   if(HOT_THRESHOLD<=val){
     *x=index%8/8.0f-0.5f;
     *y=index/8/8.0f-0.5f;
+    return true;
   }
+  return false;
 }
 
