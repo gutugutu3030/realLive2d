@@ -3,11 +3,14 @@ import controlP5.*;
 import java.util.*;
 
 boolean usingSerial=true;
+boolean avoidInterference =true;//v2土台との干渉対策　45度斜めでのキャリブレーション
 
 Serial arduino;
 ControlP5 cp5;
 
-int angle0[]=new int[]{29, 35, 25, 25, 16, 24, 30, 23, 22, 23, 50, 23, 26, 13, 25, 31};
+int angle0[]=new int[] {
+  29, 35, 25, 25, 16, 24, 30, 23, 22, 23, 0, 23, 26, 13, 25, 31
+};
 
 int index=0;
 
@@ -18,6 +21,10 @@ void setup() {
   }
   cp5=new ControlP5(this);
   for (int i=0; i<angle0.length; i++) {
+    if (avoidInterference) {
+      angle0[i]+=45;//干渉対策
+    }
+
     cp5.addSlider("servo_"+i)
       .setPosition(100, 100*i)
         .setRange(20, 40)
