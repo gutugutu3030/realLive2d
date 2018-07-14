@@ -5,7 +5,7 @@ void setLayerXY(float x, float y) {
   if (y < -0.5 || 0.5 < y)return;
   int amount[4] = {40, 30, 20, 50};
 
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < LAYER_LENGTH; i++) {
     layerX[i] = 50 + (int)(x * amount[i]);
     layerY[i] = 50 + (int)(y * amount[i]);
   }

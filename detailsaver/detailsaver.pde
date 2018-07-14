@@ -9,7 +9,7 @@ Serial arduino;
 ControlP5 cp5;
 
 int angle0[]=new int[] {
-  29, 35, 25, 25, 16, 24, 30, 23, 22, 23, 0, 23, 26, 13, 25, 31
+  24, 35, 25, 20, 16, 24, 30, 23, 22, 23, 0, 23/*, 26, 13, 25, 31*/
 };
 
 int index=0;
@@ -21,13 +21,12 @@ void setup() {
   }
   cp5=new ControlP5(this);
   for (int i=0; i<angle0.length; i++) {
-    if (avoidInterference) {
-      angle0[i]+=45;//干渉対策
-    }
+    int d=avoidInterference?45:0;
+      angle0[i]+=d;
 
     cp5.addSlider("servo_"+i)
       .setPosition(100, 100*i)
-        .setRange(20, 40)
+        .setRange(20+d, 40+d)
           .setSize(width-100, 100)
             .setValue(angle0[i])
               .setId(i);

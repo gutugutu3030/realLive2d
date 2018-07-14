@@ -25,7 +25,7 @@ void standalone() {
 
   }
 
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < LAYER_LENGTH; i++) {
     layerX[i] = 50 + (int)(eyeX * amount[i]);
     layerY[i] = 50 + (int)(eyeY * amount[i]);
   }
