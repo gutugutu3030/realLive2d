@@ -12,25 +12,25 @@ module servo(){
     cube([4.2,5,18+100]);
 }
 
-module servo4_0(){
-translate([servoW*4,0,0])
+module servo3_0(){
+translate([servoW*3,0,0])
 scale([-1,1,1])
-    for(i = [0:3]){
+    for(i = [0:2]){
         translate([i*13,0,(2.4+5)*i]){
             servo();
         }
     }
 }
 
-module servo4(){
-translate([servoW*4,0,0])
+module servo3(){
+translate([servoW*3,0,0])
 scale([-1,1,1])
 difference(){
 union(){
     translate([-waku,-waku,0])
     cube([waku,waku*2+servoH,15.8]);
     translate([0,-waku,0]){
-    for(i = [0:3]){
+    for(i = [0:2]){
         translate([i*13,0,0]){
             cube([waku+servoW,waku*2+servoH,15.8+(2.4+5)*i]);
         }
@@ -40,7 +40,7 @@ union(){
 
 
 union(){
-    for(i = [0:3]){
+    for(i = [0:2]){
         translate([i*13,0,(2.4+5)*i]){
             servo();
         }
@@ -50,7 +50,7 @@ union(){
 }
 }
 
-module servo4_rect(l=servoW*4+waku*2){
+module servo3_rect(l=servoW*3+waku*2){
     translate([-waku,-waku,0])
     cube([l,servoH+waku+2,15.8]);
 
@@ -62,7 +62,7 @@ module hikkake(l=servoW*4,d=10,fixPos=true,haba=0.8,thin=2){
     if(fixPos){
         x=-waku;
     }
-    for(i=[1:5]){
+    for(i=[1:4]){
         translate([0,-d,(2.4+5)*i+15.8+2.4-thin])
             cube([l,d,thin]);  
         translate([0,-d,(2.4+5)*i+15.8+2.4+haba])
@@ -71,7 +71,8 @@ module hikkake(l=servoW*4,d=10,fixPos=true,haba=0.8,thin=2){
 
 }
 
-//servo4_0();
+//servo3();
+//servo3_0();
 //servo();
 //hikkake();
 //
