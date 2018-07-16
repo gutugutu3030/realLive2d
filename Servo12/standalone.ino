@@ -13,7 +13,7 @@ void standalone() {
 
   float angle = (cnt++) * 0.1;
 
-  int amount[4] = {40, 30, 20, 50};
+  int amount[LAYER_LENGTH] = {35, 20, 50};
 
   if (detectedFinger) {
     //まず指の検知をする

@@ -14,7 +14,7 @@ GridEYE grideye;//サーモセンサ
 #define LAYER_LENGTH 3
 #define SERVO_NUM 12
 
-int defaultAngle[SERVO_NUM] = {24, 35, 25, 20, 16, 24, 30, 23, 22, 23, 0, 23/*, 26, 13, 25, 31*/};
+int defaultAngle[SERVO_NUM] = {24, 35, 25, 18, 16, 24, 30, 23, 22, 23, 0, 23/*, 26, 13, 25, 31*/};
 
 //0 - 100
 int layerX[LAYER_LENGTH] = {50, 50, 50};
