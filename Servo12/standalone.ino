@@ -1,7 +1,8 @@
 int cnt = 0;
 
 float fingerX = 0, fingerY = 0;
-
+bool detectedFinger = false;
+float eyeX = 0, eyeY = 0;
 
 void standalone() {
   //  for (int i = 0; i < 16; i++) {
@@ -12,11 +13,21 @@ void standalone() {
 
   float angle = (cnt++) * 0.1;
 
-  int amount[4] = {40, 30, 20, 50};
+  int amount[LAYER_LENGTH] = {35, 20, 50};
 
-  for (int i = 0; i < 4; i++) {
-    layerX[i] = 50 + (int)(fingerX * amount[i]);
-    layerY[i] = 50 + (int)(fingerY * amount[i]);
+  if (detectedFinger) {
+    //まず指の検知をする
+    detectedFinger = false;
+    eyeX = fingerX;
+    eyeY = fingerY;
+  } else if (!getHotPixel(&eyeX, &eyeY)/*人の検知をする*/) {
+    //次の動作
+
+  }
+
+  for (int i = 0; i < LAYER_LENGTH; i++) {
+    layerX[i] = 50 + (int)(eyeX * amount[i]);
+    layerY[i] = 50 + (int)(eyeY * amount[i]);
   }
 
   writeLayer();
@@ -43,8 +54,6 @@ void handle_xyz(unsigned int x, unsigned int y, unsigned int z) {
   // x z
   fingerX = fingerX * alpha + (x / 65535.0 - 0.5) * (1 - alpha);
   fingerY = fingerY * alpha + (z / 65535.0 - 0.5) * (1 - alpha);
-  Serial.print(fingerX);
-  Serial.print(" ");
-  Serial.println(fingerY);
+  detectedFinger = true;
   lastFingerTime = millis();
 }
