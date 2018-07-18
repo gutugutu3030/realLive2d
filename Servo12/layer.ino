@@ -1,14 +1,13 @@
 #include    <math.h>
 #define WIDTHDE 5
 
-void setLayerXY(float x, float y) {
+void setLayerXY(float x, float y,int *layerAmount) {
   if (x < -0.5 || 0.5 < x)return;
   if (y < -0.5 || 0.5 < y)return;
-  int amount[LAYER_LENGTH] = {35, 10, 50};
 
   for (int i = 0; i < LAYER_LENGTH; i++) {
-    layerX[i] = 50 + (int)(x * amount[i]);
-    layerY[i] = 50 + (int)(y * amount[i]);
+    layerX[i] = 50 + (int)(x * layerAmount[i]);
+    layerY[i] = 50 + (int)(y * layerAmount[i]);
   }
   writeLayer();
 }

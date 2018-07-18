@@ -2,6 +2,8 @@ int cnt = 0;
 
 float fingerX = 0, fingerY = 0;
 bool detectedFinger = false;
+unsigned long lastFingerTime = 0;
+
 float eyeX = 0, eyeY = 0;
 
 void standalone() {
@@ -13,9 +15,9 @@ void standalone() {
 
   float angle = (cnt++) * 0.1;
 
-  int amount[LAYER_LENGTH] = {35, 20, 50};
+  int amount[LAYER_LENGTH] = {30, -22, 50};
 
-  if (detectedFinger) {
+  if (millis() - lastFingerTime<3000/* detectedFinger*/) {
     //まず指の検知をする
     detectedFinger = false;
     eyeX = fingerX;
@@ -39,8 +41,6 @@ void standalone() {
 unsigned int oldx, oldy, oldz;
 float alpha = 0.5;
 float fingerAngle = 0;
-
-unsigned long lastFingerTime = 0;
 
 
 void handle_xyz(unsigned int x, unsigned int y, unsigned int z) {
