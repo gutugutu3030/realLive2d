@@ -1,4 +1,5 @@
 # realLive2d
+![gif](animation.gif)
 ## reallive2dSimulator
 Processing　設計ソフト＋シミュレータ
 
