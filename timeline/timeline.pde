@@ -1,18 +1,53 @@
+import controlP5.*;
+import processing.serial.*;
+
+
 int layerNum=3;
+boolean usingSerial=false;
+
+Serial arduino;
+ControlP5 cp5;
+
+int timeIndex=0;
+boolean playing=false;
 
 Timeline t[]=new Timeline[layerNum];
 Timeline selectedTimeline=null;
 
+int amount[]=new int[layerNum];
+
 void setup() {
   size(1600, 1600);
+  cp5 = new ControlP5(this);
   for (int i=0; i<t.length; i++) {
-    t[i]=new Timeline(0, i*200, width, 200,100);
+    t[i]=new Timeline(0, i*200, width-100, 200, 100);
+    cp5.addSlider("layerAmount_"+i).setPosition(width-100, i*200).setSize(100, 180).setRange(-50, 50).setValue(amount[i]);
   }
+  if (usingSerial) {
+    arduino=new Serial(this, "COM8", 57600);
+  }
+
+  frameRate(60);
 }
 
 void draw() {
+  if(playing&&frameCount%3==0){
+    timeIndex++;
+  }
+  
   for (Timeline t1 : t) {
     t1.draw();
+  }
+  strokeWeight(3);
+  stroke(0);
+  for (int i=0; i<layerNum; i++) {
+    line(0, i*200, width, i*200);
+  }
+  if (usingSerial&&frameCount%5==0) {
+    for (int i=0; i<layerNum; i++) {
+      arduino.write(t[i].getValue(amount[i]));
+    }
+    arduino.write(0);
   }
 }
 
@@ -25,9 +60,20 @@ void mousePressed() {
   }
 }
 
-void mouseDragged(){
-  if(selectedTimeline!=null){
+void mouseDragged() {
+  if (selectedTimeline!=null) {
     selectedTimeline.drag();
+  }
+}
+
+void keyReleased(){
+  if(key==' '){
+    if(playing){
+      playing=false;
+    }else{
+      playing=true;
+      timeIndex=0;
+    }
   }
 }
 
@@ -59,6 +105,12 @@ class Timeline {
       vertex(x+i/scale, y+height/2-data[i]);
     }
     endShape();
+    strokeWeight(1);
+    stroke(255,0,0);
+    {
+      int x1=(int)(x+timeIndex%data.length/scale);
+      line(x1,y,x1,y+height);
+    }
   }
   void drag() {
     int x1=min(max(mouseX-x, 0), width-1);
@@ -67,6 +119,9 @@ class Timeline {
   }
   boolean ifin() {
     return x<=mouseX&&mouseX<x+width&&y<=mouseY&&mouseY<y+height;
+  }
+  int getValue(int amount) {
+    return data[timeIndex%data.length]*amount/height+51;
   }
 }
 
