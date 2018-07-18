@@ -1,5 +1,6 @@
 import controlP5.*;
 import processing.serial.*;
+import java.util.*;
 
 
 int layerNum=3;
@@ -73,6 +74,28 @@ void keyReleased(){
     }else{
       playing=true;
       timeIndex=0;
+    }
+  }
+  if(key=='s'){
+    String lines[]=new String[layerNum];
+    for(int i=0;i<lines.length;i++){
+      lines[i]="";
+      for(int j=0;j<t[i].data.length;j++){
+        if(j!=0){
+          lines[i]+=",";
+        }
+        lines[i]+=t[i].data[j];
+      }
+    }
+    saveStrings("data.text",lines);
+  }
+  if(key=='l'){
+    String lines[]=loadStrings("data.text");
+    for(int i=0;i<lines.length;i++){
+      String data[]=lines[i].split(",");
+      for(int j=0;j<data.length;j++){
+        t[i].data[j]=int(data[j]);
+      }
     }
   }
 }
