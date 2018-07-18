@@ -2,7 +2,7 @@ import processing.serial.*;
 import controlP5.*;
 import java.util.*;
 
-boolean usingSerial=false;
+boolean usingSerial=true;
 
 int layerAmount[]=new int[3];
 
@@ -33,7 +33,7 @@ void draw() {
   background(0);
   if(frameCount%4==0&&usingSerial){
     arduino.write(mouseX*100/width);
-    arduino.write(mouseY*100/height);
+    arduino.write(100-mouseY*100/height);
     for(int a:layerAmount){
       arduino.write(a+51);
     }
