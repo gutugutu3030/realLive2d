@@ -44,8 +44,8 @@ void loop() {
     int length = Serial.readBytesUntil(0, buffer, BUFFERSIZE);
     if (length >= LAYER_LENGTH*2) {
       for (int i = 0; i < LAYER_LENGTH; i++) {
-        layerX[i] = buffer[i/2]-1;
-        layerY[i] = buffer[i/2+1]-1;
+        layerX[i] = buffer[i*2]-1;
+        layerY[i] = buffer[i*2+1]-1;
       }
       writeLayer();
     }
