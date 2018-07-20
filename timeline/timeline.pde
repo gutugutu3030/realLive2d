@@ -4,7 +4,7 @@ import java.util.*;
 
 
 int layerNum=3;
-boolean usingSerial=false;
+boolean usingSerial=true;
 
 Serial arduino;
 ControlP5 cp5;
@@ -67,6 +67,10 @@ void mouseDragged() {
   if (selectedTimeline!=null) {
     selectedTimeline.drag();
   }
+}
+
+void mouseReleased(){
+  selectedTimeline=null;
 }
 
 void keyReleased() {
