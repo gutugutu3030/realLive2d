@@ -20,7 +20,9 @@ bool exploreEvent(byte cmd, byte *data, int dataLength) {
       for (int i = 0; i < LAYER_LENGTH; i++) {
         int d = max(min(data[i]-1, 100), 0);
         EEPROM[i] = d;
-        amount[i] = d-50;
+        if(usingEEPROM){
+          amount[i] = d-50;
+        }
       }
       return true;
   }

@@ -15,7 +15,6 @@ void standalone() {
 
   float angle = (cnt++) * 0.1;
 
-  int amount[LAYER_LENGTH] = {30, -22, 50};
 
   if (millis() - lastFingerTime<3000/* detectedFinger*/) {
     //まず指の検知をする
