@@ -2,6 +2,9 @@ import processing.serial.*;
 import controlP5.*;
 import java.util.*;
 
+final byte COMMAND_EXPLORE=0x01;
+final byte COMMAND_SAVEAMOUNT=0x02;
+
 boolean usingSerial=true;
 
 int layerAmount[]=new int[3];
@@ -31,10 +34,12 @@ void setup() {
 
 void draw() {
   background(0);
-  if(frameCount%4==0&&usingSerial){
-    for(int i=0;i<layerAmount.length;i++){
-      arduino.write(mouseX*layerAmount[i]/width+51);
-      arduino.write((height-mouseY)*layerAmount[i]/height+51);
+  if (frameCount%4==0&&usingSerial) {
+    arduino.write(COMMAND_EXPLORE);
+    for (int i=0; i<layerAmount.length; i++) {
+      int x=(mouseX-width/2)*layerAmount[i]/width;
+      arduino.write(x+51);
+      arduino.write((height/2-mouseY)*layerAmount[i]/height+51);
     }    
     arduino.write(0);
   }
@@ -53,5 +58,17 @@ void controlEvent(ControlEvent theEvent) {
       }
     }
   }
+}
+
+void keyReleased() {
+  if (!usingSerial) {
+    return;
+  }
+  arduino.write(COMMAND_SAVEAMOUNT);
+  for (int i=0; i<layerAmount.length; i++) {
+    arduino.write(layerAmount[i]+51);
+  }
+  arduino.write(0);
+  println("write"+Arrays.toString(layerAmount));
 }
 
