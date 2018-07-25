@@ -69,5 +69,6 @@ void keyReleased() {
     arduino.write(layerAmount[i]+51);
   }
   arduino.write(0);
+  println("write"+Arrays.toString(layerAmount));
 }
 
