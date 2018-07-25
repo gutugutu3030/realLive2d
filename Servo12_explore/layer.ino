@@ -17,7 +17,7 @@ void writeLayer() {
     return;
   }
   for (int i = 0; i < LAYER_LENGTH; i++) {
-    layerX[i]=min(90,max(10,layerX[i]));
+    layerX[i]=min(maxmin[i][0],max(maxmin[i][1],layerX[i]));
     layerY[i]=min(90,max(10,layerY[i]));
     servo_write(i * 4, defaultAngle[i * 4] + (acos((layerX[i] + 100-WIDTHDE) / 300.0) * 180 / M_PI)); //upperLeft
     servo_write(i * 4 + 1, defaultAngle[i * 4 + 1] + (90 - acos(1 - (layerX[i] + 100+WIDTHDE) / 300.0) * 180 / M_PI)); //upperRight

@@ -18,7 +18,7 @@ GridEYE grideye;//サーモセンサ
 int amount[LAYER_LENGTH];
 int defaultAngle[SERVO_NUM] = {24, 35, 25, 18, 16, 24, 30, 23, 22, 23, 0, 23/*, 26, 13, 25, 31*/};
 //レイヤー2可動サーボが時々プラ版に引っかかるため，動作を制限する
-int maxmin[LAYER_LENGTH][2]={{100,0},{100,10},{100,0}};
+int maxmin[LAYER_LENGTH][2]={{95,0},{100,15},{100,0}};
 
 
 //0 - 100

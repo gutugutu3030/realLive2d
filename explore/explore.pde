@@ -22,7 +22,7 @@ void setup() {
   for (int i=0; i<layerAmount.length; i++) {
     cp5.addSlider("layer_"+i)
       .setPosition(0, 80*i)
-        .setRange(-40, 40)
+        .setRange(-50, 50)
           .setSize(width, 80)
             .setValue(layerAmount[i])
               .setId(i);
@@ -37,8 +37,9 @@ void draw() {
   if (frameCount%4==0&&usingSerial) {
     arduino.write(COMMAND_EXPLORE);
     for (int i=0; i<layerAmount.length; i++) {
-      arduino.write((mouseX-width/2)*layerAmount[i]/width*2+51);
-      arduino.write((height/2-mouseY)*layerAmount[i]/height*2+51);
+      int x=(mouseX-width/2)*layerAmount[i]/width;
+      arduino.write(x+51);
+      arduino.write((height/2-mouseY)*layerAmount[i]/height+51);
     }    
     arduino.write(0);
   }
