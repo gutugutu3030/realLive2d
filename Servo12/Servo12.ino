@@ -42,11 +42,12 @@ void loop() {
   if (Serial.available()) {
     byte buffer[BUFFERSIZE];
     int length = Serial.readBytesUntil(0, buffer, BUFFERSIZE);
-    if(length>=5){
-      int x=buffer[0]-1;
-      int y=buffer[1]-1;
-      int layerAmount[3]={buffer[2]-51,buffer[3]-51,buffer[4]-51};
-      setLayerXY(x/100.0-0.5,y/100.0-0.5,layerAmount);
+    if (length >= LAYER_LENGTH*2) {
+      for (int i = 0; i < LAYER_LENGTH; i++) {
+        layerX[i] = buffer[i*2]-1;
+        layerY[i] = buffer[i*2+1]-1;
+      }
+      writeLayer();
     }
     lastReceivingTime = millis();
   }

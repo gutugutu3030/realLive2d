@@ -32,11 +32,10 @@ void setup() {
 void draw() {
   background(0);
   if(frameCount%4==0&&usingSerial){
-    arduino.write(mouseX*100/width+1);
-    arduino.write(100-mouseY*100/height+1);
-    for(int a:layerAmount){
-      arduino.write(a+51);
-    }
+    for(int i=0;i<layerAmount.length;i++){
+      arduino.write(mouseX*layerAmount[i]/width+51);
+      arduino.write((height-mouseY)*layerAmount[i]/height+51);
+    }    
     arduino.write(0);
   }
 }
