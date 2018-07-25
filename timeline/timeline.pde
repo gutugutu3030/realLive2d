@@ -2,7 +2,7 @@ import controlP5.*;
 import processing.serial.*;
 import java.util.*;
 
-
+final byte COMMAND_EXPLORE=0x01;
 int layerNum=3;
 boolean usingSerial=true;
 
@@ -45,6 +45,7 @@ void draw() {
     line(0, i*200, width, i*200);
   }
   if (usingSerial&&frameCount%5==0) {
+    arduino.write(COMMAND_EXPLORE);
     for (int i=0; i<layerNum*2; i++) {
       arduino.write(t[i].getValue(amount[i]));
       print(t[i].getValue(amount[i])+" ");
