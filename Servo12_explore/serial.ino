@@ -18,9 +18,9 @@ bool exploreEvent(byte cmd, byte *data, int dataLength) {
         return false;
       }
       for (int i = 0; i < LAYER_LENGTH; i++) {
-        int d = max(min(data[i * 2] - 51, 50), -50);
-        amount[i] = d;
+        int d = max(min(data[i]-1, 100), 0);
         EEPROM[i] = d;
+        amount[i] = d-50;
       }
       return true;
   }
