@@ -16,7 +16,7 @@ GridEYE grideye;//サーモセンサ
 #define LAYER_LENGTH 3
 #define SERVO_NUM 12
 
-int amount[LAYER_LENGTH]={30, -22, 50};//usingEEPROM=falseのときに使用される値
+int amount[LAYER_LENGTH] = {30, -22, 50}; //usingEEPROM=falseのときに使用される値
 int defaultAngle[SERVO_NUM] = {24, 35, 25, 18, 16, 24, 30, 23, 22, 23, 0, 23/*, 26, 13, 25, 31*/};
 //レイヤー2可動サーボが時々プラ版に引っかかるため，動作を制限する
 int maxmin[LAYER_LENGTH][2] = {{95, 0}, {100, 15}, {100, 0}};
@@ -32,14 +32,6 @@ int layerY[LAYER_LENGTH] = {50, 50, 50};
 
 void setup() {
   Serial.begin(57600);
-  if (usingEEPROM) {
-    for (int i = 0; i < LAYER_LENGTH; i++) {
-      amount[i] = EEPROM[i] - 50;
-      Serial.print(amount[i]);
-      Serial.print(" ");
-    }
-  }
-  Serial.println();
   delay(500);
   pwm.begin();                   //初期設定 (アドレス0x40用)
   pwm.setPWMFreq(20);            //PWM周期を60Hzに設定 (アドレス0x40用)
@@ -48,6 +40,15 @@ void setup() {
   Skywriter.onXYZ(handle_xyz);
   delay(50);
   grideye.begin();
+  if (usingEEPROM) {
+  Serial.println("layerAmount:");
+    for (int i = 0; i < LAYER_LENGTH; i++) {
+      amount[i] = EEPROM[i] - 50;
+      Serial.print(amount[i]);
+      Serial.print(" ");
+    }
+    Serial.println();
+  }
 }
 
 unsigned long lastReceivingTime = 0;

@@ -7,7 +7,9 @@ final byte COMMAND_SAVEAMOUNT=0x02;
 
 boolean usingSerial=true;
 
-int layerAmount[]=new int[3];
+int layerAmount[]= {
+  0, 0, 0
+};
 
 Serial arduino;
 ControlP5 cp5;
@@ -70,5 +72,13 @@ void keyReleased() {
   }
   arduino.write(0);
   println("write"+Arrays.toString(layerAmount));
+}
+
+void serialEvent(Serial p) {
+  String str=p.readString();
+  if (str!=null) {
+    return;
+  }
+  print(str);
 }
 
