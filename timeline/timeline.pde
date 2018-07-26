@@ -106,6 +106,7 @@ void keyReleased() {
         t[i].data[j]=int(data[j]);
       }
       amount[i]=int(sp[1]);
+      cp5.getController("layerAmount_"+i).setValue(amount[i]);
     }
   }
 }
