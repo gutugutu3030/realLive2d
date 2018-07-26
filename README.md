@@ -4,16 +4,26 @@
 Processing　設計ソフト＋シミュレータ
 
 縮尺は 1pixel = 0.1mm
-update.pdeのupdate関数内にpanelposをいじるコードを書くと良さげ
-フレームレートが高いせいか，シリアルのコードがまずいのか，わからないが高確率でサーボがバグる
+一応シリアル通信機能はついているがv1用　現状のプログラムでは使用できないので注意
 
 使用ライブラリ：controlP5
 
 ## Servo16
 Arduino実行ファイル．上記の理由に付き基本的にはこっちをいじったほうが良い
 こっちはstandalone関数内に書くと良さげ
+usingEEPROMフラグでレイヤの移動量をEEPROMから読むかソースコードの値を参照するかを決定できる
 
-使用ライブラリ：秋月電子のPCA9685.zip，[Skywriter Arduino Library](https://github.com/pimoroni/skywriter-hat/tree/master/arduino)，[SparkFun GridEYE Arduino Library](https://github.com/sparkfun/SparkFun_GridEYE_Arduino_Library)
+使用ライブラリ：秋月電子のPCA9685.zip，[Skywriter Arduino Library](https://github.com/pimoroni/skywriter-hat/tree/master/arduino)，[SparkFun GridEYE Arduino Library](https://github.com/sparkfun/SparkFun_GridEYE_Arduino_Library), EEPROM
+
+## explore
+顔のパラメータを変更可能　上記のEEPROMモードにてパラメータ書き込みをするソフトもこれが担当する
+
+マウス座標に顔が向くようになっている　上のスライダにて各レイヤの移動量を変更できる．移動量はキー操作でEEPROMに書き込みができる
+
+## timeline
+5秒間，各レイヤの動きを記録，再生できる
+簡単なタイムラインインターフェースからなっている
+sキーで保存，lキーで読み込みが可能
 
 ## deteilsaver
 キャリブレーション用システム
