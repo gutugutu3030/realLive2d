@@ -3,6 +3,8 @@
 #include <SparkFun_GridEYE_Arduino_Library.h>
 #include <PCA9685.h>            //PCA9685用ヘッダーファイル（秋月電子通商作成）
 #include <skywriter.h>
+#include <Adafruit_NeoPixel.h>
+
 
 bool usingEEPROM = true;
 
