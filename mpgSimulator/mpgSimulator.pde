@@ -258,6 +258,9 @@ class Servo {
     this.dir=dir;
     list.add(this);
   }
+  int getPWM(){
+    return (int)map(angle, 0, PI, 150, 600);
+  }
   void setAngle(float angle) {
     this.angle=angle;
   }
