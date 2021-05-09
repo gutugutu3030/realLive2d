@@ -3,6 +3,8 @@ package io.github.gutugutu3030.mpg.config.panel;
 import io.github.gutugutu3030.config.AbstractConfig;
 
 public class PanelConfig extends AbstractConfig {
+  /** レイヤ数 */
+  public int num = 1;
   /** パネル幅 */
   public double w = 250;
   /** パネル高さ */

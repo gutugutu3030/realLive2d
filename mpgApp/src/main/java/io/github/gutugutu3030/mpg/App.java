@@ -5,14 +5,20 @@ package io.github.gutugutu3030.mpg;
 
 import io.github.gutugutu3030.config.ConfigReader;
 import io.github.gutugutu3030.mpg.config.Config;
+import io.github.gutugutu3030.mpg.layer.Layer;
+import io.github.gutugutu3030.mpg.message.ServoAnglesOscMessage;
+import io.github.gutugutu3030.osc.OscMethod;
+import io.github.gutugutu3030.osc.OscMethodType;
 import io.github.gutugutu3030.pi.PCA9685;
-import io.github.gutugutu3030.websocket.ArtWebSocketServer;
-import io.github.gutugutu3030.websocket.WebSocketMethod;
+import io.github.gutugutu3030.util.Vector;
+import io.github.gutugutu3030.websocket.OscWebSocketServer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,10 +64,13 @@ public class App extends Thread {
   Config config;
 
   /** フロントWEB通信クラス */
-  ArtWebSocketServer webSocketServer;
+  OscWebSocketServer webSocketServer;
 
   /** サーボをi2cで管理するPCA9685 */
   PCA9685 pca9685;
+
+  /** レイヤ */
+  List<Layer> layers;
 
   /**
    * コンストラクタ
@@ -72,10 +81,14 @@ public class App extends Thread {
     log.info("kiteru?");
     this.config = Optional.ofNullable(abstractConfig).orElseGet(() -> new Config());
     log.info("Config:{}", this.config);
-    webSocketServer = new ArtWebSocketServer(this, abstractConfig);
+    webSocketServer = new OscWebSocketServer(this, config.websocket);
     log.info("constructor ok.");
     // サーボi2c
     pca9685 = new PCA9685(config.servo.PCA9685Channels);
+    layers =
+        IntStream.range(0, config.panel.num)
+            .mapToObj(i -> new Layer(config))
+            .collect(Collectors.toList());
   }
 
   /** {@inheritDoc} */
@@ -84,34 +97,41 @@ public class App extends Thread {
     webSocketServer.start();
 
     while (true) {
-      // rainbow.run();
       sleep(10);
+      pca9685.write(
+          layers.stream()
+              .map(Layer::getPWMList)
+              .flatMap(List::stream)
+              .collect(Collectors.toList()));
     }
   }
 
   /**
-   * ウェブソケットで受け取ったDMXを設定します
+   * レイヤのポジションを設定します
    *
-   * @param data DMXデータ
+   * @param data [layer1'sX(mm), layer1'sY(mm), layer1'sAngle(degree), ...]
    */
-  @WebSocketMethod(addr = "/set/dmx")
-  public void setDmxFromFront(List<Integer> data) {}
+  @OscMethod(addr = "/set/layers")
+  public void setLayersPosition(List<Float> data) {
+    for (int i = 0; i < data.size() - 2; i += 3) {
+      if (i / 3 >= layers.size()) {
+        break;
+      }
+      layers.get(i / 3).set(new Vector(data.get(i), data.get(i + 1)), data.get(i + 2));
+    }
+  }
 
-  /** ウェブソケットにDMXを送信します */
-  @WebSocketMethod(addr = "/request/dmx")
-  public void sendDmxToFront() {}
+  /** 各種情報を取得します */
+  @OscMethod(addr = "/get/info", using = OscMethodType.WEBSOCKET)
+  public void getInfo() {
+    webSocketServer.sendOscBundle(
+        new ServoAnglesOscMessage(layers), layers.get(0).getInfoOscMessage());
+  }
 
-  /** ライト情報をDMXに送信します */
-  @WebSocketMethod(addr = "/request/lightConfig")
-  public void sendLightsSettingtoFront() {}
-
-  /**
-   * ログを表示します
-   *
-   * @param str ログ内容
-   */
-  @WebSocketMethod(addr = "/log/server")
-  public void logDebug(String str) {}
+  @OscMethod(addr = "/get/servoAngles")
+  public void getServoAngles() {
+    webSocketServer.sendOscMessage(new ServoAnglesOscMessage(layers));
+  }
 
   /**
    * 一定秒数待機します

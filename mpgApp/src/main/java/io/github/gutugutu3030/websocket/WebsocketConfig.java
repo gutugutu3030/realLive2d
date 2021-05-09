@@ -1,4 +1,4 @@
-package io.github.gutugutu3030.mpg.config.websocket;
+package io.github.gutugutu3030.websocket;
 
 import io.github.gutugutu3030.config.AbstractConfig;
 

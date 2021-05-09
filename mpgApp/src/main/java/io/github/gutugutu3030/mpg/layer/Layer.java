@@ -3,6 +3,7 @@ package io.github.gutugutu3030.mpg.layer;
 import io.github.gutugutu3030.mpg.config.Config;
 import io.github.gutugutu3030.mpg.config.constraints.MovementConstraintsConfig;
 import io.github.gutugutu3030.mpg.layer.servo.Servo;
+import io.github.gutugutu3030.mpg.message.LayerInfoOscMessage;
 import io.github.gutugutu3030.util.Pair;
 import io.github.gutugutu3030.util.Vector;
 import java.util.List;
@@ -126,6 +127,22 @@ public class Layer {
    */
   public Pair<Vector, Double> get() {
     return new Pair<>(this.position, this.angle);
+  }
+
+  /**
+   * レイヤ情報のOSCメッセージを作成します
+   *
+   * @return
+   */
+  public LayerInfoOscMessage getInfoOscMessage() {
+    return new LayerInfoOscMessage(
+        size,
+        (float) distanceOfServoY,
+        (float) railPosition,
+        (float) armLength,
+        (float) offsetOfServo,
+        (float) servoXsY,
+        movementConstraints);
   }
 
   /** サーボの回転軸座標をセットします */

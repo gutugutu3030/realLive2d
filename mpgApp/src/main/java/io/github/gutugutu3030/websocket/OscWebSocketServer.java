@@ -5,7 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.illposed.osc.OSCBundle;
 import com.illposed.osc.OSCMessage;
-import io.github.gutugutu3030.mpg.config.Config;
+import io.github.gutugutu3030.osc.OscMethod;
+import io.github.gutugutu3030.osc.OscMethodType;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,17 +21,16 @@ import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ArtWebSocketServer extends WebSocketServer {
+/** OSCのようにWebSocketを送受信するWebSocketサーバ */
+public class OscWebSocketServer extends WebSocketServer {
 
   private static Logger log = LoggerFactory.getLogger(WebSocketServer.class);
 
   /** 受信メソッドの書かれたクラス */
   private Object methodClass;
 
-  public ArtWebSocketServer(Object methodClass, Config config) {
-    super(
-        new InetSocketAddress(
-            Optional.ofNullable(config).map(c -> c.websocket).map(c -> c.port).orElse(8080)));
+  public OscWebSocketServer(Object methodClass, WebsocketConfig config) {
+    super(new InetSocketAddress(config.port));
     this.methodClass = methodClass;
   }
 
@@ -73,10 +73,13 @@ public class ArtWebSocketServer extends WebSocketServer {
         .filter(
             m ->
                 Arrays.stream(m.getDeclaredAnnotations()) //
-                    .filter(WebSocketMethod.class::isInstance)
-                    .map(WebSocketMethod.class::cast)
+                    .filter(OscMethod.class::isInstance)
+                    .map(OscMethod.class::cast)
                     .findAny() //
-                    .map(WebSocketMethod::addr)
+                    .filter(
+                        a ->
+                            Arrays.asList(a.using()).contains(OscMethodType.WEBSOCKET)) // 対応タイプかどうか
+                    .map(OscMethod::addr)
                     .map(json.address::equals)
                     .orElse(false))
         .findAny()
