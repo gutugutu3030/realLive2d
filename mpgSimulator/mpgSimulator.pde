@@ -26,7 +26,7 @@ static final float servoH=22.2;
 float armL=110;
 
 int servoYDistance = 230;
-int servoXsY = 50;
+int servoXsY = 70;
 
 float limitFunctionA = -1.6;
 float limitFunctionB = 40;
@@ -132,10 +132,15 @@ void draw() {
 }
 
 void setPanelPosition(){
+  float maxMoveR = limitFunctionA * abs(panelRotate) + limitFunctionB;
   if(!autoMove){
+    if(dist(0,0,panelX,panelY)<=maxMoveR){
+      return;
+    }
+    panelX=0;
+    panelY=0;
     return;
   }
-  float maxMoveR = limitFunctionA * abs(panelRotate) + limitFunctionB;
   panelX = maxMoveR * sin(frameCount * 0.1);
   panelY = maxMoveR * cos(frameCount * 0.1);
 }
@@ -338,4 +343,8 @@ class Servo {
     stroke(255, 0, 0);
     line(x1, y1, x1+cos(-defaultAngle)*armL, y1-sin(-defaultAngle)*armL);
   }
+}
+
+void keyPressed(){
+  autoMove = !autoMove;
 }

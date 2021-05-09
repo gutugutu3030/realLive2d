@@ -1,0 +1,29 @@
+websocket:
+  port: 8080
+
+# レイヤパネル
+panel:
+  # パネル幅
+  w: 250
+  # パネル高さ
+  h: 250
+  # パネルの恥からレールミゾの中心までの距離
+  railPosition: 10
+
+# サーボ
+servo:
+  # pca9685のチャンネル
+  PCA9685Channels: [0x40]
+  # アーム長さ
+  armLength: 110
+  # Y軸操作のサーボの回転軸同士の幅
+  distanceOfServoY: 230
+  # X軸操作のサーボの高さ
+  yOfServoX: 70
+  # 0で30度の位置が真ん中 数値を増やすとその分だけサーボがパネルから離れます
+  positionOffset: 10
+
+# 傾きと平行移動の制約条件 [平行移動のMAX（mm）] = [傾き（度）] x a + b
+movementConstraints:
+  a: -1.6
+  b: 40
