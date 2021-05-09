@@ -1,6 +1,7 @@
 package io.github.gutugutu3030.mpg.layer.servo;
 
 import io.github.gutugutu3030.util.Vector;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +61,18 @@ public class Servo {
   }
 
   /**
+   * 現在の角度でのPWM値を取得します
+   *
+   * @return
+   */
+  public int getPWM() {
+    return Math.min(
+        pwm.pwmMax,
+        Math.max(
+            pwm.pwmMin, (int) (angle / (Math.PI / 2) * (pwm.pwmMax - pwm.pwmMin) + pwm.pwmMin)));
+  }
+
+  /**
    * y=mx+nの直線上に乗るような回転角を取得します。<br>
    * そのような角度がない場合、Optional.empty()を返します
    *
@@ -70,6 +83,10 @@ public class Servo {
    */
   public Optional<Double> getNewAngleFromLine(double armLength, double m, double n) {
     List<Vector> results = getIntersectionPoint(armLength, position.x, position.y, m, n);
-    return Optional.empty();
+    return results.stream()
+        .sorted(Comparator.comparing(Vector::mag)) // 原点に近い交点を使用する
+        .findFirst() // その一番近い頂点だけ取得
+        .filter(p -> p.dist(position) <= armLength) // 交点とサーボ回転軸がアームの長さより離れてないかチェック
+        .map(p -> Math.atan2(p.y - position.y, p.x - position.x));
   }
 }

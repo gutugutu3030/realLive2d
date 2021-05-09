@@ -104,8 +104,28 @@ public class Layer {
     if (!candidates.stream().allMatch(p -> p.getValue().isPresent())) {
       return false;
     }
+    this.angle = angle;
+    this.position = position;
     candidates.forEach(p -> p.getValue().ifPresent(a -> p.getKey().setAngle(a)));
     return true;
+  }
+
+  /**
+   * 現在の角度でのPWMの数値を取得します
+   *
+   * @return PWMのリスト
+   */
+  public List<Integer> getPWMList() {
+    return Stream.of(servoX, servoY1, servoY2).map(Servo::getPWM).collect(Collectors.toList());
+  }
+
+  /**
+   * 現在の座標と角度を取得します
+   *
+   * @return 座標と角度のペア
+   */
+  public Pair<Vector, Double> get() {
+    return new Pair<>(this.position, this.angle);
   }
 
   /** サーボの回転軸座標をセットします */
@@ -118,7 +138,4 @@ public class Layer {
     servoY2.setPosition(new Vector(-distanceOfServoY / 2, servoY));
     servoX.setPosition(new Vector(servoXRail - armLength / 2 - offsetOfServo, servoXsY));
   }
-
-  /** サーボの回転角度をセットします */
-  void setServoAngle() {}
 }

@@ -19,7 +19,7 @@ public class PCA9685 {
   private static final int maxOneBoardServoNum = 16;
 
   /** PWMの周波数 */
-  private final int servoFrequency = 50;
+  private final int servoFrequency = 20;
 
   /** ロガー */
   protected Logger log = LoggerFactory.getLogger(this.getClass());
