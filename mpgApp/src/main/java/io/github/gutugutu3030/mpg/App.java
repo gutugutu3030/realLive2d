@@ -3,20 +3,18 @@
  */
 package io.github.gutugutu3030.mpg;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.github.gutugutu3030.config.ConfigReader;
 import io.github.gutugutu3030.mpg.config.Config;
 import io.github.gutugutu3030.pi.PCA9685;
 import io.github.gutugutu3030.websocket.ArtWebSocketServer;
 import io.github.gutugutu3030.websocket.WebSocketMethod;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** メインクラス */
 public class App extends Thread {
@@ -31,13 +29,28 @@ public class App extends Thread {
    */
   public static void main(String[] args) {
     log.info("args:{}", Arrays.toString(args));
-    Path configDir = (args.length > 0) ? Paths.get(args[0], "launch" //
-        , Optional.of(args).filter(a -> a.length > 1).map(a -> a[1]).orElse("default") //
-        , "config.yaml") : Paths.get(System.getProperty("user.dir"), "launch" //
-            , Optional.of(args).filter(a -> a.length > 0).map(a -> a[0]).orElse("default") //
-            , "config.yaml");
+    Path configDir =
+        (args.length > 0)
+            ? Paths.get(
+                args[0],
+                "launch" //
+                ,
+                Optional.of(args).filter(a -> a.length > 1).map(a -> a[1]).orElse("default") //
+                ,
+                "config.yaml")
+            : Paths.get(
+                System.getProperty("user.dir"),
+                "launch" //
+                ,
+                Optional.of(args).filter(a -> a.length > 0).map(a -> a[0]).orElse("default") //
+                ,
+                "config.yaml");
     log.info("config:{}", configDir);
-    new App(ConfigReader.readConfig(configDir).filter(Config.class::isInstance).map(Config.class::cast).orElseThrow())
+    new App(
+            ConfigReader.readConfig(configDir)
+                .filter(Config.class::isInstance)
+                .map(Config.class::cast)
+                .orElseThrow())
         .start();
   }
 
@@ -82,18 +95,15 @@ public class App extends Thread {
    * @param data DMXデータ
    */
   @WebSocketMethod(addr = "/set/dmx")
-  public void setDmxFromFront(List<Integer> data) {
-  }
+  public void setDmxFromFront(List<Integer> data) {}
 
   /** ウェブソケットにDMXを送信します */
   @WebSocketMethod(addr = "/request/dmx")
-  public void sendDmxToFront() {
-  }
+  public void sendDmxToFront() {}
 
   /** ライト情報をDMXに送信します */
   @WebSocketMethod(addr = "/request/lightConfig")
-  public void sendLightsSettingtoFront() {
-  }
+  public void sendLightsSettingtoFront() {}
 
   /**
    * ログを表示します
@@ -101,8 +111,7 @@ public class App extends Thread {
    * @param str ログ内容
    */
   @WebSocketMethod(addr = "/log/server")
-  public void logDebug(String str) {
-  }
+  public void logDebug(String str) {}
 
   /**
    * 一定秒数待機します

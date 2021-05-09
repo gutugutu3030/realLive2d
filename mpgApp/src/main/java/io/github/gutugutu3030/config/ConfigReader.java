@@ -1,5 +1,6 @@
 package io.github.gutugutu3030.config;
 
+import io.github.gutugutu3030.mpg.config.Config;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,8 +8,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
-
-import io.github.gutugutu3030.mpg.config.Config;
 
 public class ConfigReader {
   private static Logger log = LoggerFactory.getLogger(ConfigReader.class);
