@@ -6,6 +6,7 @@ package io.github.gutugutu3030.mpg;
 import io.github.gutugutu3030.config.ConfigReader;
 import io.github.gutugutu3030.mpg.config.Config;
 import io.github.gutugutu3030.mpg.layer.Layer;
+import io.github.gutugutu3030.mpg.message.LayersInfoOscMessage;
 import io.github.gutugutu3030.mpg.message.ServoAnglesOscMessage;
 import io.github.gutugutu3030.osc.OscMethod;
 import io.github.gutugutu3030.osc.OscMethodType;
@@ -119,15 +120,18 @@ public class App extends Thread {
       }
       layers.get(i / 3).set(new Vector(data.get(i), data.get(i + 1)), data.get(i + 2));
     }
+    this.getServoAngles();
   }
 
   /** 各種情報を取得します */
   @OscMethod(addr = "/get/info", using = OscMethodType.WEBSOCKET)
   public void getInfo() {
     webSocketServer.sendOscBundle(
-        new ServoAnglesOscMessage(layers), layers.get(0).getInfoOscMessage());
+        new ServoAnglesOscMessage(layers),
+        new LayersInfoOscMessage(layers.stream().map(Layer::getInfoOscMessage)));
   }
 
+  /** サーボの角度を取得します */
   @OscMethod(addr = "/get/servoAngles")
   public void getServoAngles() {
     webSocketServer.sendOscMessage(new ServoAnglesOscMessage(layers));

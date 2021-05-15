@@ -19,6 +19,7 @@ public class LayerInfoOscMessage extends OSCMessage {
         List.of(
             (float) size.x,
             (float) size.y,
+            distanceOfServoY,
             railPosition,
             armLength,
             offsetOfServo,
