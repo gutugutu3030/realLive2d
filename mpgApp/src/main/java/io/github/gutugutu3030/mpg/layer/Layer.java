@@ -10,12 +10,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * パネル1枚<br>
  * 移動してないときのパネル中央を座標0とします。<br>
  */
 public class Layer {
+  private Logger log = LoggerFactory.getLogger(this.getClass());
   /** レイヤーを動かすサーボ */
   private Servo servoX, servoY1, servoY2;
 
@@ -71,14 +74,19 @@ public class Layer {
    * @param angle 回転量
    */
   public boolean set(Vector position, double angle) {
+    log.debug("set layer - {} {}", position, angle);
     if (!movementConstraints.met(position, angle)) {
+      log.warn("out of movement constraints");
       return false;
     }
+    this.position = position;
+    this.angle = angle;
     if (Math.abs(angle) < 0.0001) {
       // 回転なし
-      servoY1.setAngle(Math.asin((size.y + offsetOfServo) / armLength + 0.5));
-      servoY2.setAngle(Math.PI - Math.asin((size.y + offsetOfServo) / armLength + 0.5));
-      servoX.setAngle(Math.asin((size.x + offsetOfServo) / armLength + 0.5));
+      servoY1.setAngle(Math.asin((position.y + offsetOfServo) / armLength + 0.5));
+      servoY2.setAngle(Math.PI - Math.asin((position.y + offsetOfServo) / armLength + 0.5));
+      servoX.setAngle(Math.asin((position.x + offsetOfServo) / armLength + 0.5));
+      log.debug("{} {} {}", servoY1, servoY2, servoX);
       return true;
     }
     double armL = armLength;
@@ -125,8 +133,12 @@ public class Layer {
    *
    * @return 座標と角度のペア
    */
-  public Pair<Vector, Double> get() {
-    return new Pair<>(this.position, this.angle);
+  public Pair<Vector, Pair<Double, List<Double>>> get() {
+    return new Pair<>(
+        this.position,
+        new Pair<>(
+            this.angle,
+            Stream.of(servoY1, servoY2, servoX).map(Servo::getAngle).collect(Collectors.toList())));
   }
 
   /**

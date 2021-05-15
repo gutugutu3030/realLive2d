@@ -68,7 +68,8 @@ public class OscWebSocketServer extends WebSocketServer {
    * @param json 受け取ったJSON
    */
   private void onMessageExec(WebSocketJson json) {
-    log.debug("json:{} - {}", json.address, json.args);
+    log.debug("json: {}", json);
+    List<Object> arguments = json.getParsedArgs();
     Arrays.stream(methodClass.getClass().getDeclaredMethods()) //
         .filter(
             m ->
@@ -85,26 +86,19 @@ public class OscWebSocketServer extends WebSocketServer {
         .findAny()
         .ifPresent(
             m -> {
-              Class<?> parameterType[] = m.getParameterTypes();
+              List<Class<?>> parameterType =
+                  Arrays.stream(m.getParameterTypes()).collect(Collectors.toList());
               try {
-                if (parameterType.length == 0) {
+                if (parameterType.size() == 0) {
                   m.invoke(methodClass);
                   return;
                 }
-                if (parameterType.length == 1 && List.class.isAssignableFrom(parameterType[0])) {
-                  m.invoke(methodClass, json.args);
+                if (parameterType.size() == 1
+                    && List.class.isAssignableFrom(parameterType.get(0))) {
+                  m.invoke(methodClass, arguments);
                   return;
                 }
-                if (parameterType.length == json.args.size()
-                    && //
-                    IntStream.range(0, parameterType.length)
-                        .allMatch(
-                            i -> //
-                            parameterType[i].isInstance(json.args.get(i)))) {
-                  m.invoke(methodClass, json.args.toArray());
-                  return;
-                }
-                throw new IllegalArgumentException("unknown args");
+                m.invoke(methodClass, arguments.toArray());
               } catch (Exception e) {
                 log.error("failed invoke WebsocketMethod", e);
               }
@@ -211,5 +205,20 @@ public class OscWebSocketServer extends WebSocketServer {
     } catch (JsonProcessingException e) {
       log.error("bundle json send failed", e);
     }
+  }
+
+  /**
+   * そのパラメータタイプが一致しているか調べます
+   *
+   * @param methodTypes メソッドのクラス配列
+   * @param jsonType jsonに記述されたパラメータタイプ
+   * @return 一致しているかどうか
+   */
+  private boolean canChangeArgType(List<Class<?>> methodTypes, List<Object> args) {
+    if (methodTypes.size() != args.size()) {
+      return false;
+    }
+    return IntStream.range(0, methodTypes.size())
+        .allMatch(i -> methodTypes.get(i).isInstance(args.get(i)));
   }
 }

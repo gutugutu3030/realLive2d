@@ -56,6 +56,10 @@ public class Servo {
     this.position = position;
   }
 
+  public double getAngle() {
+    return this.angle;
+  }
+
   public void setAngle(double angle) {
     this.angle = angle;
   }
@@ -88,5 +92,9 @@ public class Servo {
         .findFirst() // その一番近い頂点だけ取得
         .filter(p -> p.dist(position) <= armLength) // 交点とサーボ回転軸がアームの長さより離れてないかチェック
         .map(p -> Math.atan2(p.y - position.y, p.x - position.x));
+  }
+
+  public String toString() {
+    return String.format("Servo[angle=%f]", this.angle);
   }
 }

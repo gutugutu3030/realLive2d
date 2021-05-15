@@ -62,6 +62,13 @@ $(function() {
                             coordinate.scale *= p.max(p.min(1 + p.movedY * speed, 1.05), 0.95);
                             break;
                         }
+                    case "3":
+                        {
+                            $.setCommonPosition({
+                                x: (p.mouseX / p.width - 0.5) * 2,
+                                y: (p.mouseY / p.height - 0.5) * 2,
+                            });
+                        }
                 }
             };
 
@@ -97,19 +104,25 @@ $(function() {
         },
 
         setLayerPosition: function(positions) {
-            for (var i = 0; i < positions.length / 2; i++) {
-                if (layers.size() > i) {
+            for (var i = 0; i < positions.length / 6; i++) {
+                if (layers.length > i) {
                     layers[i].setPosition({
-                        x: positions[i * 2],
-                        y: positions[i * 2 + 1],
+                        x: positions[i * 6],
+                        y: positions[i * 6 + 1],
+                        rotate: positions[i * 6 + 2],
                     });
+                    layers[i].setServoAngles([
+                        positions[i * 6 + 3],
+                        positions[i * 6 + 4],
+                        positions[i * 6 + 5],
+                    ]);
                 }
             }
         },
 
         setServoAngles: function(angles) {
             for (var i = 0; i < angles.length / 3; i++) {
-                if (layers.size() > i) {
+                if (layers.length > i) {
                     layers[i].setServoAngles(
                         angles[i * 3],
                         angles[i * 3 + 1],
@@ -178,7 +191,6 @@ class Layer {
                 y: this.servoXsY,
             },
         ];
-        console.log(servoPosition[2]);
         p.noFill();
         p.stroke(0);
         p.push();

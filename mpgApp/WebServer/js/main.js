@@ -1,9 +1,36 @@
 $(function() {
     $.extend($, {
         dmx: Array(512).fill(0),
-        sendToServer: function(addr, args) {
+        movementConstraints: { a: -1.6, b: 40 },
+        commonPosition: { x: 0, y: 0, angle: 0 },
+        /**
+         *
+         * @param {*} newPosition x,yは-1 - 1, angleはdegree
+         */
+        setCommonPosition: function(newPosition) {
+            if ("angle" in newPosition) {
+                $.commonPosition.angle = newPosition.angle;
+            }
+            if ("x" in newPosition && "y" in newPosition) {
+                var magnitude = Math.sqrt(
+                    newPosition.x * newPosition.x + newPosition.y * newPosition.y
+                );
+                var per = Math.min(1, magnitude);
+                var maxMagnitude =
+                    $.movementConstraints.a * $.commonPosition.angle +
+                    $.movementConstraints.b;
+                $.commonPosition.x = ((newPosition.x * maxMagnitude) / magnitude) * per;
+                $.commonPosition.y = ((newPosition.y * maxMagnitude) / magnitude) * per;
+            }
+            send("/setCommonPosition", "fff", [
+                $.commonPosition.x,
+                $.commonPosition.y,
+                $.commonPosition.angle,
+            ]);
+        },
+        sendToServer: function(addr, type, args) {
             try {
-                send(addr, args);
+                send(addr, type, args);
             } catch (e) {}
         },
         sendBundleToServer: function(bundle) {
@@ -31,7 +58,7 @@ $(function() {
 
         ws.onopen = () => {
             setActiveBackground(true);
-            sendBundle([{ address: "/get/info", args: [] }]);
+            sendBundle([{ address: "/get/info", type: "", args: [] }]);
         };
 
         ws.onmessage = (receive) => {
@@ -76,7 +103,7 @@ $(function() {
      * @param {Array} args
      */
     function received(address, args) {
-        console.log(address, args);
+        // console.log(address, args);
         if (!commands) {
             commands = new Map(
                 new Array( //
@@ -139,10 +166,11 @@ $(function() {
      * @param {string} address アドレス
      * @param {Array} args 引数配列
      */
-    function send(address, args) {
+    function send(address, type, args) {
         ws.send(
             JSON.stringify({
                 address: address,
+                type: type,
                 args: args,
             })
         );

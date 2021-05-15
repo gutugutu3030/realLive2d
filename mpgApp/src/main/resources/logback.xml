@@ -24,11 +24,11 @@
 
   <!-- ルートロガー -->
   <!-- DEBUG, INFO, WARN, ERROR レベルのログを出力 -->
-  <root level="DEBUG">
+  <root level="debug">
     <appender-ref ref="BAR-STDOUT" />
   </root>
 
   <!-- INFO, WARN, ERROR レベルのログを出力 -->
-  <!-- <logger name="myapp" level="INFO"/> -->
+  <logger name="org.java_websocket.WebSocketImpl" level="debug"/>
 
 </configuration>

@@ -32,13 +32,16 @@ $title = "art";
                     <div class="tab-pane fade show active p-3" id="map">
                         <div class="btn-group btn-group-toggle mb-1" id="map-drag-option"  data-toggle="buttons">
                             <label class="btn btn-info active">
-                            <input type="radio" name="options" id="map-drag-option-rotate" autocomplete="off" value="0"> 回転
+                            <input type="radio" name="options" autocomplete="off" value="0"> 回転
                             </label>
                             <label class="btn btn-info">
-                            <input type="radio" name="options" id="map-drag-option-translate" autocomplete="off" value="1"> 移動
+                            <input type="radio" name="options" autocomplete="off" value="1"> 移動
                             </label>
                             <label class="btn btn-info">
-                            <input type="radio" name="options" id="map-drag-option-scale" autocomplete="off" value="2"> 拡大
+                            <input type="radio" name="options" autocomplete="off" value="2"> 拡大
+                            </label>
+                            <label class="btn btn-info">
+                            <input type="radio" name="options" autocomplete="off" value="3"> 操作
                             </label>
                         </div>
                         <div id="map-canvas"></div>
