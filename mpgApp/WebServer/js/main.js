@@ -111,7 +111,6 @@ $(function() {
      * @param {Array} args
      */
     function received(address, args) {
-        console.log(address, args);
         if (!commands) {
             commands = new Map(
                 new Array( //
@@ -158,12 +157,12 @@ $(function() {
         var config = [];
         for (var i = 0; i < args.length / 9; i++) {
             config.push({
-                size: { x: args[i * 8], y: args[i * 8 + 1] },
-                distanceOfServoY: args[i * 8 + 2],
-                railPosition: args[i * 8 + 3],
-                armLength: args[i * 8 + 4],
-                offsetOfServo: args[i * 8 + 5],
-                servoXsY: args[i * 8 + 6],
+                size: { x: args[i * 9], y: args[i * 9 + 1] },
+                distanceOfServoY: args[i * 9 + 2],
+                railPosition: args[i * 9 + 3],
+                armLength: args[i * 9 + 4],
+                offsetOfServo: args[i * 9 + 5],
+                servoXsY: args[i * 9 + 6],
             });
         }
         $.setLayerSettings(config);

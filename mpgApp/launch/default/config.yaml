@@ -3,6 +3,8 @@ websocket:
 
 # レイヤパネル
 panel:
+  # パネル数
+  num: 4
   # パネル幅
   w: 250
   # パネル高さ
@@ -27,3 +29,4 @@ servo:
 movementConstraints:
   a: -90
   b: 40
+  maxRotateAngleDegree: 15

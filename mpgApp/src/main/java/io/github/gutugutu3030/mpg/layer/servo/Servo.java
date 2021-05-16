@@ -17,11 +17,12 @@ public class Servo {
    * @param cr 円の半径
    * @param cx 円の中心X座標
    * @param cy 円の中心Y座標
-   * @param m  直線の式
-   * @param n  直線の式
+   * @param m 直線の式
+   * @param n 直線の式
    * @return 解
    */
-  private static List<Vector> getIntersectionPoint(double cr, double cx, double cy, double m, double n) {
+  private static List<Vector> getIntersectionPoint(
+      double cr, double cx, double cy, double m, double n) {
     double a = 1 + Math.pow(m, 2);
     double b = -2 * cx + 2 * m * (n - cy);
     double c = Math.pow(cx, 2) + Math.pow((n - cy), 2) - Math.pow(cr, 2);
@@ -76,8 +77,10 @@ public class Servo {
    * @return
    */
   public int getPWM() {
-    return Math.min(pwm.pwmMax,
-        Math.max(pwm.pwmMin, (int) (angle / (Math.PI / 2) * (pwm.pwmMax - pwm.pwmMin) + pwm.pwmMin)));
+    return Math.min(
+        pwm.pwmMax,
+        Math.max(
+            pwm.pwmMin, (int) (angle / (Math.PI / 2) * (pwm.pwmMax - pwm.pwmMin) + pwm.pwmMin)));
   }
 
   /**
@@ -85,14 +88,14 @@ public class Servo {
    * そのような角度がない場合、Optional.empty()を返します
    *
    * @param armLength アームの長さ
-   * @param m         直線の式
-   * @param n         直線の式
+   * @param m 直線の式
+   * @param n 直線の式
    * @return 角度
    */
   public Optional<Double> getNewAngleFromLine(double armLength, double m, double n) {
     List<Vector> results = getIntersectionPoint(armLength, position.x, position.y, m, n);
-    log.debug("きてんのか？");
-    return results.stream().sorted(Comparator.comparing(v -> v.dist(new Vector()))) // 原点に近い交点を使用する
+    return results.stream()
+        .sorted(Comparator.comparing(v -> v.dist(new Vector()))) // 原点に近い交点を使用する
         .findFirst() // その一番近い頂点だけ取得
         .map(p -> Math.atan2(p.y - position.y, p.x - position.x));
   }

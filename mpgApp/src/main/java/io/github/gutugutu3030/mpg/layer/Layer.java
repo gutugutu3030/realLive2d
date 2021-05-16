@@ -49,7 +49,10 @@ public class Layer {
   /** パネル中心の座標(mm) */
   private Vector position;
 
-  public Layer(Config config) {
+  /** 反対向きかどうか */
+  private boolean isReverse;
+
+  public Layer(Config config, boolean isReverse) {
     size = new Vector(config.panel.w, config.panel.h);
     railPosition = config.panel.railPosition;
     armLength = config.servo.armLength;
@@ -57,6 +60,8 @@ public class Layer {
     distanceOfServoY = config.servo.distanceOfServoY;
     servoXsY = config.servo.yOfServoX;
     movementConstraints = config.movementConstraints;
+
+    this.isReverse = isReverse;
 
     angle = 0;
     position = new Vector();
@@ -74,7 +79,13 @@ public class Layer {
    * @param angle 回転量(rad)
    */
   public boolean set(Vector position, double angle) {
-    log.debug("set layer - ({},{}) {}rad", position.x, position.y, angle);
+    if (isReverse) {
+      log.trace("set reverse");
+      position.x *= -1;
+      position.y *= -1;
+    }
+    log.trace("set layer - ({},{}) {}rad", position.x, position.y, angle);
+    angle = movementConstraints.checkAngle(angle);
     if (!movementConstraints.met(position, angle)) {
       log.warn("out of movement constraints");
       return false;
@@ -83,12 +94,13 @@ public class Layer {
     this.angle = angle;
     if (Math.abs(angle) < 0.0001) {
       // 回転なし
+      log.trace("no rotate calc");
       servoY1.setAngle(Math.asin((position.y + offsetOfServo) / armLength + 0.5));
       servoY2.setAngle(Math.PI - Math.asin((position.y + offsetOfServo) / armLength + 0.5));
       servoX.setAngle(Math.asin((position.x + offsetOfServo) / armLength + 0.5));
-      log.debug("{} {} {}", servoY1, servoY2, servoX);
       return true;
     }
+    log.trace("rotate calc");
     double armL = armLength;
     Stream<Pair<Servo, Optional<Double>>> streamY, streamX;
     {
@@ -97,7 +109,6 @@ public class Layer {
       // 溝の直線の式
       final double m = Math.tan(angle);
       final double n = -mizoDY / Math.cos(angle) - m * position.x + position.y;
-      log.debug("y1:{} y2:{}", servoY1.getPosition(), servoY2.getPosition());
       streamY =
           Stream.of(servoY1, servoY2).map(s -> new Pair<>(s, s.getNewAngleFromLine(armL, m, n)));
     }

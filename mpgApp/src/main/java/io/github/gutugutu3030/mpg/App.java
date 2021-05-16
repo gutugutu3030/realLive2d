@@ -88,7 +88,7 @@ public class App extends Thread {
     pca9685 = new PCA9685(config.servo.PCA9685Channels);
     layers =
         IntStream.range(0, config.panel.num)
-            .mapToObj(i -> new Layer(config))
+            .mapToObj(i -> new Layer(config, i % 2 == 1))
             .collect(Collectors.toList());
   }
 

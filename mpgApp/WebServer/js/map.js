@@ -59,7 +59,7 @@ $(function() {
                         {
                             //座標系スケール
                             var speed = 0.002;
-                            coordinate.scale *= p.max(p.min(1 + p.movedY * speed, 1.05), 0.95);
+                            coordinate.scale *= p.max(p.min(1 + p.movedY * speed, 1.05), 0.99);
                             break;
                         }
                     case "3":
@@ -93,7 +93,14 @@ $(function() {
             }
 
             function drawLayers() {
-                layers.forEach((l) => l.draw(p));
+                layers.forEach((l, i) => {
+                    p.push();
+                    if (i % 2 == 1) {
+                        p.rotateZ(p.PI);
+                    }
+                    l.draw(p);
+                    p.pop();
+                });
             }
         },
 
@@ -133,7 +140,7 @@ $(function() {
         },
     });
 
-    var layerDistance = 40;
+    var layerDistance = 25;
 
     var layers = [];
 
@@ -193,20 +200,29 @@ class Layer {
         ];
         p.noFill();
         p.stroke(0);
-        p.push();
-        p.translate(this.position.x, this.position.y);
-        p.rotateZ(this.rotate);
-        p.rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y);
-        p.line(-this.size.x / 2 + 10, servoYRail, this.size.x / 2 - 10, servoYRail);
-        p.line(
-            servoXRail, -this.size.y / 2 + this.railPosition,
-            servoXRail,
-            this.size.y / 2 - this.railPosition
-        );
+        p.push(); {
+            p.translate(0, 0, this.position.z);
+            p.push(); {
+                p.translate(this.position.x, this.position.y);
+                p.rotateZ(this.rotate);
+                p.rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y);
+                p.line(-this.size.x / 2 + 10,
+                    servoYRail,
+                    this.size.x / 2 - 10,
+                    servoYRail
+                );
+                p.line(
+                    servoXRail, -this.size.y / 2 + this.railPosition,
+                    servoXRail,
+                    this.size.y / 2 - this.railPosition
+                );
+            }
+            p.pop();
+            servoPosition.forEach((pos, i) =>
+                this.drawServo(p, i, pos, this.servoAngles[i])
+            );
+        }
         p.pop();
-        servoPosition.forEach((pos, i) =>
-            this.drawServo(p, i, pos, this.servoAngles[i])
-        );
     }
     drawServo(p, i, position, angle) {
         p.fill(100, 100, 255);
