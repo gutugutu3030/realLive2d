@@ -20,8 +20,8 @@ public class SetLayerPositionOscMessage extends OSCMessage {
                         Stream.of(
                             (float) p.getKey().x,
                             (float) p.getKey().y,
-                            (float) Math.toDegrees(p.getValue().getKey().doubleValue())),
-                        p.getValue().getValue().stream() /* .map(Math::toDegrees) */))
+                            (float) p.getValue().getKey().doubleValue()),
+                        p.getValue().getValue().stream()))
             .collect(Collectors.toList()));
   }
 }

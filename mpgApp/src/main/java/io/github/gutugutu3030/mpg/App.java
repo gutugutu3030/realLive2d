@@ -110,7 +110,7 @@ public class App extends Thread {
   /**
    * レイヤのポジションを設定します
    *
-   * @param data [layer1'sX(mm), layer1'sY(mm), layer1'sAngle(degree), ...]
+   * @param data [layer1'sX(mm), layer1'sY(mm), layer1'sAngle(radians), ...]
    */
   @OscMethod(addr = "/set/layers")
   public void setLayersPosition(List<Float> data) {

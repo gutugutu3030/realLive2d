@@ -23,7 +23,7 @@ servo:
   # 0で30度の位置が真ん中 数値を増やすとその分だけサーボがパネルから離れます
   positionOffset: 10
 
-# 傾きと平行移動の制約条件 [平行移動のMAX（mm）] = [傾き（度）] x a + b
+# 傾きと平行移動の制約条件 [平行移動のMAX（mm）] = [傾き（rad）] x a + b
 movementConstraints:
-  a: -1.6
+  a: -90
   b: 40
