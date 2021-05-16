@@ -22,14 +22,14 @@ $title = "art";
             <div class="bs-component">
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link active" data-toggle="tab" href="#map">Map</a>
+                        <a class="nav-link active" data-toggle="tab" href="#preview">プレビュー</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#simple-command">Simple</a>
+                        <a class="nav-link" data-toggle="tab" href="#setting">設定</a>
                     </li>
                 </ul>
                 <div id="main-tabs" class="tab-content">
-                    <div class="tab-pane fade show active p-3" id="map">
+                    <div class="tab-pane fade show active p-3" id="preview">
                         <div class="btn-group btn-group-toggle mb-1" id="map-drag-option"  data-toggle="buttons">
                             <label class="btn btn-info active">
                             <input type="radio" name="options" autocomplete="off" value="0"> 回転
@@ -45,8 +45,9 @@ $title = "art";
                             </label>
                         </div>
                         <div id="map-canvas"></div>
+                        <p id="position-p">Common: (0,0) rotate=0</p>
                     </div>
-                    <div class="tab-pane fade" id="simple-command">
+                    <div class="tab-pane fade" id="setting">
                         <p>昔しの書生は、笈を負ひて四方に遊歴し、此人ならばと思ふ先生の許に落付く、故に先生を敬ふ事、父兄に過ぎたり、先生も亦弟子に対する事、真の子の如し、是でなくては真の教育といふ事は出来ぬなり、今の書生は学校を旅屋の如く思ふ、金を出して暫らく逗留するに過ぎず、厭になればすぐに宿を移す、かゝる生徒に対する校長は、宿屋の主人の如く、教師は番頭丁稚なり、主人たる校長すら、時には御客の機嫌を取らねばならず、況んや番頭丁稚をや、薫陶所か解雇されざるを以て幸福と思ふ位なり、生徒の増長し教員の下落するは当前の事なり。</p>
                     </div>
                 </div>
@@ -56,29 +57,26 @@ $title = "art";
             <div class="bs-component">
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link active" data-toggle="tab" href="#info-sliders">DMX</a>
+                        <a class="nav-link active" data-toggle="tab" href="#parameter">パラメータ</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#info-art">Timeline</a>
                     </li>
                 </ul>
                 <div id="sub-tabs" class="tab-content">
-                    <div class="tab-pane fade show active" id="info-sliders">
+                    <div class="tab-pane fade show active" id="parameter">
                         <div class="mt-3 overflow-auto">
-                            <ol start="0">
-                                <?php for ($i=0; $i<512; $i++) { ?>
-                                <li>
-                                    <div class="row">
-                                        <div class="col-8">
-                                            <input id="dmxVal<?php echo $i?>" type="range" style="width:100%;" min="0" max="255" step="1" data-rangeSlider title="">
-                                        </div>                    
-                                        <div class="col-2">
-                                            <p id="dmxTag<?php echo $i?>">---</p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <?php } ?>
-                            </ol>
+                            <div class="row">
+                                <div class="col-12">
+                                    <label>傾き(-15度 ~ 15度)</label>
+                                </div>                    
+                                <div class="col-10">
+                                    <input id="slider-angle" type="range" style="width:100%;" min="<?php echo - M_PI / 12?>" max="<?php echo M_PI / 12?>" step="0.001" data-rangeSlider title="">
+                                </div>                   
+                                <div class="col-2">
+                                    <p id="tag-angle">---</p>
+                                </div>                   
+                            </div>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="info-art">

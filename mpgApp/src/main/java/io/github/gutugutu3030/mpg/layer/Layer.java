@@ -71,10 +71,10 @@ public class Layer {
    * パネルの移動量と回転量を設定します
    *
    * @param position 移動量
-   * @param angle 回転量
+   * @param angle 回転量(rad)
    */
   public boolean set(Vector position, double angle) {
-    log.debug("set layer - {} {}", position, angle);
+    log.debug("set layer - ({},{}) {}rad", position.x, position.y, angle);
     if (!movementConstraints.met(position, angle)) {
       log.warn("out of movement constraints");
       return false;
@@ -95,8 +95,9 @@ public class Layer {
       // y軸モーター
       double mizoDY = size.y / 2 - railPosition; // 中心から下ミゾまでの長さ
       // 溝の直線の式
-      final double m = Math.tan(Math.toRadians(angle));
-      final double n = -mizoDY / Math.cos(Math.toRadians(angle)) - m * position.x + position.y;
+      final double m = Math.tan(angle);
+      final double n = -mizoDY / Math.cos(angle) - m * position.x + position.y;
+      log.debug("y1:{} y2:{}", servoY1.getPosition(), servoY2.getPosition());
       streamY =
           Stream.of(servoY1, servoY2).map(s -> new Pair<>(s, s.getNewAngleFromLine(armL, m, n)));
     }
@@ -104,13 +105,16 @@ public class Layer {
       // x軸モーター
       double mizoDX = size.x / 2 - railPosition; // 中心から横ミゾまでの長さ
       // 溝の直線の式
-      final double m = Math.tan(Math.toRadians(angle) + Math.PI / 2);
-      final double n = -mizoDX / Math.sin(Math.toRadians(angle)) - m * position.x + position.y;
-      streamX = Stream.of(servoX).map(s -> new Pair<>(s, s.getNewAngleFromLine(armL, m, n)));
+      final double m = Math.tan(angle + Math.PI / 2);
+      final double n = -mizoDX / Math.sin(angle) - m * position.x + position.y;
+      streamX =
+          Stream.of(servoX)
+              .map(s -> new Pair<>(s, s.getNewAngleFromLine(armL, m, n).map(a -> a + Math.PI / 2)));
     }
     List<Pair<Servo, Optional<Double>>> candidates =
         Stream.of(streamX, streamY).flatMap(s -> s).collect(Collectors.toList());
     if (!candidates.stream().allMatch(p -> p.getValue().isPresent())) {
+      log.warn("out of movable range");
       return false;
     }
     this.angle = angle;
@@ -164,7 +168,7 @@ public class Layer {
     double servoXRail = servoYRail; // 横レールの座標
 
     servoY1.setPosition(new Vector(-distanceOfServoY / 2, servoY));
-    servoY2.setPosition(new Vector(-distanceOfServoY / 2, servoY));
+    servoY2.setPosition(new Vector(distanceOfServoY / 2, servoY));
     servoX.setPosition(new Vector(servoXRail - armLength / 2 - offsetOfServo, servoXsY));
   }
 }

@@ -5,7 +5,7 @@ $(function() {
         commonPosition: { x: 0, y: 0, angle: 0 },
         /**
          *
-         * @param {*} newPosition x,yは-1 - 1, angleはdegree
+         * @param {*} newPosition x,yは-1 - 1, angleはrad
          */
         setCommonPosition: function(newPosition) {
             if ("angle" in newPosition) {
@@ -22,6 +22,14 @@ $(function() {
                 $.commonPosition.x = ((newPosition.x * maxMagnitude) / magnitude) * per;
                 $.commonPosition.y = ((newPosition.y * maxMagnitude) / magnitude) * per;
             }
+            $("#position-p").text(
+                "Common: (" +
+                $.commonPosition.x +
+                "," +
+                $.commonPosition.y +
+                ") rotate=" +
+                $.commonPosition.angle
+            );
             send("/setCommonPosition", "fff", [
                 $.commonPosition.x,
                 $.commonPosition.y,
@@ -103,7 +111,7 @@ $(function() {
      * @param {Array} args
      */
     function received(address, args) {
-        // console.log(address, args);
+        console.log(address, args);
         if (!commands) {
             commands = new Map(
                 new Array( //
@@ -195,6 +203,11 @@ $(function() {
             )
         );
     }
+
+    $("#slider-angle").on("input", function() {
+        $.setCommonPosition({ angle: parseFloat($(this).val()) });
+        $("#tag-angle").text($(this).val());
+    });
 
     // スライダリスナ登録
     Array(512)

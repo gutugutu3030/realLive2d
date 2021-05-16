@@ -66,7 +66,7 @@ $(function() {
                         {
                             $.setCommonPosition({
                                 x: (p.mouseX / p.width - 0.5) * 2,
-                                y: (p.mouseY / p.height - 0.5) * 2,
+                                y: -(p.mouseY / p.height - 0.5) * 2,
                             });
                         }
                 }
@@ -195,7 +195,7 @@ class Layer {
         p.stroke(0);
         p.push();
         p.translate(this.position.x, this.position.y);
-        p.rotateZ(p.radians(this.rotate));
+        p.rotateZ(this.rotate);
         p.rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y);
         p.line(-this.size.x / 2 + 10, servoYRail, this.size.x / 2 - 10, servoYRail);
         p.line(
