@@ -3,12 +3,22 @@ $(function() {
         mapInstance: function(p) {
             p.setup = () => {
                 p.createCanvas(600, 400, p.WEBGL).parent("map-canvas");
-                var $canvas = $("#map-canvas");
-                p.resizeCanvas($canvas.width(), ($canvas.width() * 2) / 3);
-                p.ortho(-p.width / 2, p.width / 2, p.height / 2, -p.height / 2, 0, 500);
+                // p.ortho(-p.width / 2, p.width / 2, p.height / 2, -p.height / 2, 0, 500);
+                p.perspective((p.PI * 25) / 180, p.width / p.height, 0.1, 500);
             };
 
+            p.windowResized = () => {
+                var $canvas = $("#map-canvas");
+                p.resizeCanvas($canvas.width(), ($canvas.width() * 2) / 3);
+            };
+
+            var first = true;
+
             p.draw = () => {
+                if (first) {
+                    p.windowResized();
+                    first = false;
+                }
                 p.background(100);
 
                 p.translate(
@@ -18,7 +28,7 @@ $(function() {
                 );
                 p.rotateX(coordinate.rotateX);
                 p.rotateY(coordinate.rotateY);
-                p.scale(1, 1, 1);
+                p.scale(1, -1, 1);
                 p.scale(coordinate.scale);
                 drawAxis();
                 drawLayers();
@@ -32,7 +42,7 @@ $(function() {
                 translateX: 0,
                 translateY: 0,
                 translateZ: 0,
-                scale: 1,
+                scale: 0.3,
             };
 
             p.mouseDragged = () => {
@@ -129,15 +139,23 @@ $(function() {
                         })
                         .val(0);
                     $input.on("input", function() {
-                        var list = $("#layer-control")
-                            .find("input")
-                            .get()
-                            .map((e) => parseFloat($(e).val()));
-                        $.sendToServer(
-                            "/setLayerScaled",
-                            list.map((e) => "f").join(""),
-                            list
-                        );
+                        var list = $.getLayerScaledPositionFromSlider();
+                        var bundle = [{
+                            address: "/setLayerScaled",
+                            type: list.map((e) => "f").join(""),
+                            args: list,
+                        }, ];
+                        if ($.updateScaledPosition(list)) {
+                            var slider2d = $.slider2d.flatMap((e) => [e.x, e.y, e.layer.length].concat(e.layer));
+                            slider2d.unshift($.slider2d.length);
+                            console.log(slider2d);
+                            bundle.push({
+                                address: "/setSlider2d",
+                                type: slider2d.map((e) => "f").join(""),
+                                args: slider2d,
+                            });
+                        }
+                        $.sendBundleToServer(bundle);
                     });
                     $("<div>").addClass("col-12").append($input).appendTo($div);
                 });

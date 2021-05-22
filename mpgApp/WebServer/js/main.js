@@ -1,6 +1,5 @@
 $(function() {
     $.extend($, {
-        dmx: Array(512).fill(0),
         movementConstraints: { a: -1.6, b: 40 },
         commonPosition: { x: 0, y: 0, angle: 0 },
         /**
@@ -36,6 +35,20 @@ $(function() {
                 $.commonPosition.angle,
             ]);
         },
+        /**
+         * レイヤーの位置をスライダから取得します
+         */
+        getLayerScaledPositionFromSlider: () =>
+            $("#layer-control")
+            .find("input")
+            .get()
+            .map((e) => parseFloat($(e).val())),
+        /**
+         * ウェブソケットをサーバに送信します
+         * @param {*} addr アドレス
+         * @param {*} type 引数タイプ
+         * @param {*} args 引数
+         */
         sendToServer: function(addr, type, args) {
             try {
                 send(addr, type, args);
@@ -194,10 +207,11 @@ $(function() {
         ws.send(
             JSON.stringify(
                 bundle
-                .filter((m) => "address" in m && "args" in m)
+                .filter((m) => "address" in m && "args" in m && "type" in m)
                 .map((m) => ({
                     address: m.address,
                     args: m.args,
+                    type: m.type,
                 }))
             )
         );
@@ -206,6 +220,18 @@ $(function() {
     $("#slider-angle").on("input", function() {
         $.setCommonPosition({ angle: parseFloat($(this).val()) });
         $("#tag-angle").text($(this).val());
+    });
+
+    $("#save-layer-slider2d").on("click", function() {
+        const blob = new Blob([JSON.stringify($.slider2d, null, "  ")], {
+            type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "slider2d.json";
+        link.click();
+        URL.revokeObjectURL(url);
     });
 
     // スライダリスナ登録

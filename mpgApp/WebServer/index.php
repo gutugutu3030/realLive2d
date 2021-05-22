@@ -12,6 +12,7 @@ $title = "art";
 <script src="js/main.js"></script>
 <script src="js/p5.min.js"></script>
 <script src="js/map.js"></script>
+<script src="js/slider2d.js"></script>
 <link rel="stylesheet" type="text/css" href="css/range-slider.min.css">
 <script src="js/range-slider.min.js"></script>
 </head>
@@ -75,8 +76,9 @@ $title = "art";
                                 </div>                   
                                 <div class="col-2">
                                     <p id="tag-angle">---</p>
-                                </div>                   
+                                </div>
                             </div>
+                            <div id="slider2d"  oncontextmenu="return false;"></div>
                             <div class="dropdown">
                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="layer-select" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Layer Select
@@ -86,6 +88,10 @@ $title = "art";
                                 </div>
                             </div>
                             <div id="layer-control">
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-primary" id="save-layer-slider2d">Save</button>
+                                <button type="button" class="btn btn-primary" id="load-layer-slider2d">Load</button>
                             </div>
                         </div>
                     </div>
