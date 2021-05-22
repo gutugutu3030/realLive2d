@@ -142,7 +142,9 @@ $(function() {
                     $("<div>").addClass("col-12").append($input).appendTo($div);
                 });
                 $layerControl.append($div);
-                // $div.hide();
+                if (i != 0) {
+                    $div.hide();
+                }
                 $div.addClass("layerDropdownDiv");
                 $div.data({ layer: i });
                 // ドロップダウンリスト
@@ -155,16 +157,8 @@ $(function() {
                     .text("layer " + i)
                     .data({ layer: i })
                     .click(function() {
-                        var layer = $(this).data("layer");
-                        console.log(layer);
                         $layerControl.find(".layerDropdownDiv").hide();
                         $div.show();
-                        // $layerControl
-                        //     .find(".layerDropdownDiv")
-                        //     .get()
-                        //     .map((e) => $(e))
-                        //     .filter((e) => e.data("layer") == layer)
-                        //     .forEach((e) => e.show());
                     })
                 );
 
@@ -220,18 +214,6 @@ $(function() {
 var servoSize = { w: 22.2, h: 11.8, d: 40 };
 
 class Layer {
-    // constructor(pos) {
-    //     this.servoAngles = [0, 0, 0];
-    //     this.size = { x: 250, y: 250 };
-    //     this.distanceOfServoY = 230;
-    //     this.railPosition = 10;
-    //     this.armLength = 110;
-    //     this.offsetOfServo = 10;
-    //     this.servoXsY = 70;
-    //     //
-    //     this.position = pos;
-    //     this.rotate = 0;
-    // }
     constructor(config, pos, image = null) {
         this.servoAngles = [0, 0, 0];
         this.size = config.size;

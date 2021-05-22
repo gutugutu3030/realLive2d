@@ -36,28 +36,13 @@ public class App extends Thread {
    */
   public static void main(String[] args) {
     log.info("args:{}", Arrays.toString(args));
-    Path configDir =
-        (args.length > 0)
-            ? Paths.get(
-                args[0],
-                "launch" //
-                ,
-                Optional.of(args).filter(a -> a.length > 1).map(a -> a[1]).orElse("default") //
-                ,
-                "config.yaml")
-            : Paths.get(
-                System.getProperty("user.dir"),
-                "launch" //
-                ,
-                Optional.of(args).filter(a -> a.length > 0).map(a -> a[0]).orElse("default") //
-                ,
-                "config.yaml");
+    Path configDir = (args.length > 0) ? Paths.get(args[0], "launch" //
+        , Optional.of(args).filter(a -> a.length > 1).map(a -> a[1]).orElse("default") //
+        , "config.yaml") : Paths.get(System.getProperty("user.dir"), "launch" //
+            , Optional.of(args).filter(a -> a.length > 0).map(a -> a[0]).orElse("default") //
+            , "config.yaml");
     log.info("config:{}", configDir);
-    new App(
-            ConfigReader.readConfig(configDir)
-                .filter(Config.class::isInstance)
-                .map(Config.class::cast)
-                .orElseThrow())
+    new App(ConfigReader.readConfig(configDir).filter(Config.class::isInstance).map(Config.class::cast).orElseThrow())
         .start();
   }
 
@@ -86,10 +71,8 @@ public class App extends Thread {
     log.info("constructor ok.");
     // サーボi2c
     pca9685 = new PCA9685(config.servo.PCA9685Channels);
-    layers =
-        IntStream.range(0, config.panel.num)
-            .mapToObj(i -> new Layer(config, i % 2 == 1))
-            .collect(Collectors.toList());
+    layers = IntStream.range(0, config.panel.num).mapToObj(i -> new Layer(config, i % 2 == 1))
+        .collect(Collectors.toList());
   }
 
   /** {@inheritDoc} */
@@ -99,11 +82,7 @@ public class App extends Thread {
 
     while (true) {
       sleep(10);
-      pca9685.write(
-          layers.stream()
-              .map(Layer::getPWMList)
-              .flatMap(List::stream)
-              .collect(Collectors.toList()));
+      pca9685.write(layers.stream().map(Layer::getPWMList).flatMap(List::stream).collect(Collectors.toList()));
     }
   }
 
@@ -124,10 +103,28 @@ public class App extends Thread {
   }
 
   /**
+   * レイヤのポジションを設定します。<br>
+   * 角度は-15度から15度を-1から1に変換したものとなり、平行移動量はその角度での移動可能な量を-1から1にスケールした値で指定します
+   * 
+   * @param data [layer1'sX(-1 ~ 1), layer1'sY(-1 ~ 1), layer1'sAngle(-1 ~ 1),
+   *             ...]
+   */
+  @OscMethod(addr = "/setLayerScaled")
+  public void setLayersScaledPosition(List<Float> data) {
+    for (int i = 0; i < data.size() - 2; i += 3) {
+      if (i / 3 >= layers.size()) {
+        break;
+      }
+      layers.get(i / 3).setScaledPosition(data.get(i), data.get(i + 1), data.get(i + 2));
+    }
+    this.getServoAngles();
+  }
+
+  /**
    * レイヤのポジションを一括して設定します
    *
-   * @param x レイヤX (mm)
-   * @param y レイヤY (mm)
+   * @param x     レイヤX (mm)
+   * @param y     レイヤY (mm)
    * @param angle 傾き (radians)
    */
   @OscMethod(addr = "/setCommonPosition")
@@ -143,13 +140,13 @@ public class App extends Thread {
    * @param y 目線Y [-1 ~ 1]
    */
   @OscMethod(addr = "/setFaceLookingPosition")
-  public void setFaceLookingPosition(float x, float y) {}
+  public void setFaceLookingPosition(float x, float y) {
+  }
 
   /** 各種情報を取得します */
   @OscMethod(addr = "/get/info", using = OscMethodType.WEBSOCKET)
   public void getInfo() {
-    webSocketServer.sendOscBundle(
-        new SetLayerPositionOscMessage(layers),
+    webSocketServer.sendOscBundle(new SetLayerPositionOscMessage(layers),
         new LayersInfoOscMessage(layers.stream().map(Layer::getInfoOscMessage)));
   }
 

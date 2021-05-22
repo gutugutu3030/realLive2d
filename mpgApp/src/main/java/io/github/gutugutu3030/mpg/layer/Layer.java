@@ -76,7 +76,7 @@ public class Layer {
    * パネルの移動量と回転量を設定します
    *
    * @param position 移動量
-   * @param angle 回転量(rad)
+   * @param angle    回転量(rad)
    */
   public boolean set(Vector position, double angle) {
     if (isReverse) {
@@ -109,8 +109,7 @@ public class Layer {
       // 溝の直線の式
       final double m = Math.tan(angle);
       final double n = -mizoDY / Math.cos(angle) - m * position.x + position.y;
-      streamY =
-          Stream.of(servoY1, servoY2).map(s -> new Pair<>(s, s.getNewAngleFromLine(armL, m, n)));
+      streamY = Stream.of(servoY1, servoY2).map(s -> new Pair<>(s, s.getNewAngleFromLine(armL, m, n)));
     }
     {
       // x軸モーター
@@ -118,12 +117,10 @@ public class Layer {
       // 溝の直線の式
       final double m = Math.tan(angle + Math.PI / 2);
       final double n = -mizoDX / Math.sin(angle) - m * position.x + position.y;
-      streamX =
-          Stream.of(servoX)
-              .map(s -> new Pair<>(s, s.getNewAngleFromLine(armL, m, n).map(a -> a + Math.PI / 2)));
+      streamX = Stream.of(servoX).map(s -> new Pair<>(s, s.getNewAngleFromLine(armL, m, n).map(a -> a + Math.PI / 2)));
     }
-    List<Pair<Servo, Optional<Double>>> candidates =
-        Stream.of(streamX, streamY).flatMap(s -> s).collect(Collectors.toList());
+    List<Pair<Servo, Optional<Double>>> candidates = Stream.of(streamX, streamY).flatMap(s -> s)
+        .collect(Collectors.toList());
     if (!candidates.stream().allMatch(p -> p.getValue().isPresent())) {
       log.warn("out of movable range");
       return false;
@@ -149,11 +146,8 @@ public class Layer {
    * @return {レイヤ座標, {レイヤ傾き, [Y軸サーボ角度(左), Y軸サーボ角度(右), X軸サーボ角度,]}}
    */
   public Pair<Vector, Pair<Double, List<Double>>> get() {
-    return new Pair<>(
-        this.position,
-        new Pair<>(
-            this.angle,
-            Stream.of(servoY1, servoY2, servoX).map(Servo::getAngle).collect(Collectors.toList())));
+    return new Pair<>(this.position,
+        new Pair<>(this.angle, Stream.of(servoY1, servoY2, servoX).map(Servo::getAngle).collect(Collectors.toList())));
   }
 
   /**
@@ -162,14 +156,21 @@ public class Layer {
    * @return レイヤ情報OSCメッセージ
    */
   public LayerInfoOscMessage getInfoOscMessage() {
-    return new LayerInfoOscMessage(
-        size,
-        (float) distanceOfServoY,
-        (float) railPosition,
-        (float) armLength,
-        (float) offsetOfServo,
-        (float) servoXsY,
-        movementConstraints);
+    return new LayerInfoOscMessage(size, (float) distanceOfServoY, (float) railPosition, (float) armLength,
+        (float) offsetOfServo, (float) servoXsY, movementConstraints);
+  }
+
+  /**
+   * レイヤのポジションを設定します。<br>
+   * 角度は-15度から15度を-1から1に変換したものとなり、平行移動量はその角度での移動可能な量を-1から1にスケールした値で指定します
+   * 
+   * @param x
+   * @param y
+   * @param angle
+   */
+  public void setScaledPosition(Float x, Float y, Float angle) {
+    Optional.of(this.movementConstraints.mapScaledPosition(x, y, angle))
+        .ifPresent(p -> this.set(p.getKey(), p.getValue()));
   }
 
   /** サーボの回転軸座標をセットします */
