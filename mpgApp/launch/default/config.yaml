@@ -32,3 +32,6 @@ movementConstraints:
   a: -90
   b: 40
   maxRotateAngleDegree: 15
+
+interpolation:
+  defaultSetting: face.json

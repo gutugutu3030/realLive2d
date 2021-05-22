@@ -92,6 +92,10 @@ $(function() {
                         ((p.mouseX - p.width / 2) / rectSize[2]) * 2,
                         ((p.mouseY - p.height / 2) / rectSize[3]) * 2
                     );
+                    $.sendToServer("/setFaceLookingPosition", "ff", [
+                        nowPoint.x,
+                        nowPoint.y,
+                    ]);
                 }
             };
 

@@ -8,6 +8,8 @@ import io.github.gutugutu3030.mpg.config.Config;
 import io.github.gutugutu3030.mpg.layer.Layer;
 import io.github.gutugutu3030.mpg.message.LayersInfoOscMessage;
 import io.github.gutugutu3030.mpg.message.SetLayerPositionOscMessage;
+import io.github.gutugutu3030.mpg.slider2d.Slider2d;
+import io.github.gutugutu3030.mpg.slider2d.Slider2dData;
 import io.github.gutugutu3030.osc.OscMethod;
 import io.github.gutugutu3030.osc.OscMethodType;
 import io.github.gutugutu3030.pi.PCA9685;
@@ -58,6 +60,9 @@ public class App extends Thread {
   /** レイヤ */
   List<Layer> layers;
 
+  /** 2次元補間システム */
+  Slider2d slider2d;
+
   /**
    * コンストラクタ
    *
@@ -73,6 +78,7 @@ public class App extends Thread {
     pca9685 = new PCA9685(config.servo.PCA9685Channels);
     layers = IntStream.range(0, config.panel.num).mapToObj(i -> new Layer(config, i % 2 == 1))
         .collect(Collectors.toList());
+    slider2d = new Slider2d(config);
   }
 
   /** {@inheritDoc} */
@@ -141,6 +147,27 @@ public class App extends Thread {
    */
   @OscMethod(addr = "/setFaceLookingPosition")
   public void setFaceLookingPosition(float x, float y) {
+    this.slider2d.getData(x, y);
+    setLayersScaledPosition(
+        this.slider2d.getData(x, y).stream().map(d -> (float) (double) d).collect(Collectors.toList()));
+  }
+
+  /**
+   * 2次元補間システムの数値を変更します
+   * 
+   * @param data
+   */
+  @OscMethod(addr = "/setSlider2d")
+  public void setSlider2d(List<Float> data) {
+    Slider2dData.parseFloatList(data).ifPresent(slider2d::set);
+  }
+
+  /**
+   * 2次元補間システムの数値をデフォルトに変更します
+   */
+  @OscMethod(addr = "/resetSlider2d")
+  public void resetSlider2d() {
+    this.slider2d.reset();
   }
 
   /** 各種情報を取得します */
