@@ -126,15 +126,24 @@ public class App extends Thread {
   /**
    * レイヤのポジションを一括して設定します
    *
-   * @param x
-   * @param y
-   * @param angle
+   * @param x レイヤX (mm)
+   * @param y レイヤY (mm)
+   * @param angle 傾き (radians)
    */
   @OscMethod(addr = "/setCommonPosition")
   public void setCommonLayerPosition(float x, float y, float angle) {
     layers.forEach(l -> l.set(new Vector(x, y), angle));
     this.getServoAngles();
   }
+
+  /**
+   * 目線の位置を設定します
+   *
+   * @param x 目線X [-1 ~ 1]
+   * @param y 目線Y [-1 ~ 1]
+   */
+  @OscMethod(addr = "/setFaceLookingPosition")
+  public void setFaceLookingPosition(float x, float y) {}
 
   /** 各種情報を取得します */
   @OscMethod(addr = "/get/info", using = OscMethodType.WEBSOCKET)
@@ -145,7 +154,7 @@ public class App extends Thread {
   }
 
   /** サーボの角度を取得します */
-  @OscMethod(addr = "/get/servoAngles")
+  @OscMethod(addr = "/get/servoAngles", using = OscMethodType.WEBSOCKET)
   public void getServoAngles() {
     webSocketServer.sendOscMessage(new SetLayerPositionOscMessage(layers));
   }

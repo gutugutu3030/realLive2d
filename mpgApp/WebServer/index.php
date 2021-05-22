@@ -7,7 +7,7 @@ $title = "art";
 <title><?php echo $title; ?></title>
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <script src="js/jquery-3.5.1.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
 <script src="js/jquery.color.js"></script>
 <script src="js/main.js"></script>
 <script src="js/p5.min.js"></script>
@@ -76,6 +76,16 @@ $title = "art";
                                 <div class="col-2">
                                     <p id="tag-angle">---</p>
                                 </div>                   
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="layer-select" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Layer Select
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="layer-select" id="layer-select-list">
+                                    <a class="dropdown-item" href="#">Action</a>
+                                </div>
+                            </div>
+                            <div id="layer-control">
                             </div>
                         </div>
                     </div>

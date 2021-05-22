@@ -71,16 +71,21 @@ public class Servo {
     this.angle = angle;
   }
 
+  public double getDefaultAngle() {
+    return this.defaultAngle;
+  }
+
+  public void setDefaultAngle(double defaultAngle) {
+    this.defaultAngle = defaultAngle;
+  }
+
   /**
    * 現在の角度でのPWM値を取得します
    *
    * @return
    */
   public int getPWM() {
-    return Math.min(
-        pwm.pwmMax,
-        Math.max(
-            pwm.pwmMin, (int) (angle / (Math.PI / 2) * (pwm.pwmMax - pwm.pwmMin) + pwm.pwmMin)));
+    return this.pwm.getPWM(angle + defaultAngle);
   }
 
   /**

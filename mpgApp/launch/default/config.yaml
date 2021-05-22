@@ -4,7 +4,7 @@ websocket:
 # レイヤパネル
 panel:
   # パネル数
-  num: 4
+  num: 6
   # パネル幅
   w: 250
   # パネル高さ
@@ -24,6 +24,8 @@ servo:
   yOfServoX: 70
   # 0で30度の位置が真ん中 数値を増やすとその分だけサーボがパネルから離れます
   positionOffset: 10
+  # サーボのデフォルトアングルを設定します
+  defaultAngleFile: servo.csv
 
 # 傾きと平行移動の制約条件 [平行移動のMAX（mm）] = [傾き（rad）] x a + b
 movementConstraints:

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.illposed.osc.OSCBundle;
 import com.illposed.osc.OSCMessage;
-import io.github.gutugutu3030.osc.OscMethod;
+import io.github.gutugutu3030.osc.OscExecuter;
 import io.github.gutugutu3030.osc.OscMethodType;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
@@ -68,41 +68,8 @@ public class OscWebSocketServer extends WebSocketServer {
    * @param json 受け取ったJSON
    */
   private void onMessageExec(WebSocketJson json) {
-    log.debug("json: {}", json);
-    List<Object> arguments = json.getParsedArgs();
-    Arrays.stream(methodClass.getClass().getDeclaredMethods()) //
-        .filter(
-            m ->
-                Arrays.stream(m.getDeclaredAnnotations()) //
-                    .filter(OscMethod.class::isInstance)
-                    .map(OscMethod.class::cast)
-                    .findAny() //
-                    .filter(
-                        a ->
-                            Arrays.asList(a.using()).contains(OscMethodType.WEBSOCKET)) // 対応タイプかどうか
-                    .map(OscMethod::addr)
-                    .map(json.address::equals)
-                    .orElse(false))
-        .findAny()
-        .ifPresent(
-            m -> {
-              List<Class<?>> parameterType =
-                  Arrays.stream(m.getParameterTypes()).collect(Collectors.toList());
-              try {
-                if (parameterType.size() == 0) {
-                  m.invoke(methodClass);
-                  return;
-                }
-                if (parameterType.size() == 1
-                    && List.class.isAssignableFrom(parameterType.get(0))) {
-                  m.invoke(methodClass, arguments);
-                  return;
-                }
-                m.invoke(methodClass, arguments.toArray());
-              } catch (Exception e) {
-                log.error("failed invoke WebsocketMethod", e);
-              }
-            });
+    log.debug("exec json: {}", json);
+    OscExecuter.exec(json.address, json.getParsedArgs(), methodClass, OscMethodType.WEBSOCKET);
   }
 
   @Override

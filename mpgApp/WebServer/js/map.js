@@ -5,6 +5,7 @@ $(function() {
                 p.createCanvas(600, 400, p.WEBGL).parent("map-canvas");
                 var $canvas = $("#map-canvas");
                 p.resizeCanvas($canvas.width(), ($canvas.width() * 2) / 3);
+                p.ortho(-p.width / 2, p.width / 2, p.height / 2, -p.height / 2, 0, 500);
             };
 
             p.draw = () => {
@@ -17,7 +18,7 @@ $(function() {
                 );
                 p.rotateX(coordinate.rotateX);
                 p.rotateY(coordinate.rotateY);
-                p.scale(1, -1, 1);
+                p.scale(1, 1, 1);
                 p.scale(coordinate.scale);
                 drawAxis();
                 drawLayers();
@@ -95,9 +96,6 @@ $(function() {
             function drawLayers() {
                 layers.forEach((l, i) => {
                     p.push();
-                    if (i % 2 == 1) {
-                        p.rotateZ(p.PI);
-                    }
                     l.draw(p);
                     p.pop();
                 });
@@ -105,9 +103,77 @@ $(function() {
         },
 
         setLayerSettings: function(layersConfig) {
-            layers = layersConfig.map(
-                (c, i) => new Layer(c, { x: 0, y: 0, z: i * layerDistance })
-            );
+            var $layerDropDown = $("#layer-select-list");
+            $layerDropDown.empty();
+            var $layerControl = $("#layer-control");
+            $layerControl.empty();
+            layers = layersConfig.map((c, i) => {
+                // スライダの表示
+                var $div = $("<div>").addClass("row");
+                $("<div>")
+                    .addClass("col-12")
+                    .append($("<label>").text("Layer " + i))
+                    .appendTo($div);
+                ["X", "Y", "ANGLE"].forEach((sliderName) => {
+                    $("<div>")
+                        .addClass("col-12")
+                        .append($("<label>").text(sliderName))
+                        .appendTo($div);
+                    var $input = $("<input data-rangeSlider>")
+                        .attr({
+                            type: "range",
+                            style: "width:100%;",
+                            min: -1.0,
+                            max: +1.0,
+                            step: 0.001,
+                        })
+                        .val(0);
+                    $input.on("input", function() {
+                        var list = $("#layer-control")
+                            .find("input")
+                            .get()
+                            .map((e) => parseFloat($(e).val()));
+                        $.sendToServer(
+                            "/setLayerScaled",
+                            list.map((e) => "f").join(""),
+                            list
+                        );
+                    });
+                    $("<div>").addClass("col-12").append($input).appendTo($div);
+                });
+                $layerControl.append($div);
+                // $div.hide();
+                $div.addClass("layerDropdownDiv");
+                $div.data({ layer: i });
+                // ドロップダウンリスト
+                $layerDropDown.append(
+                    $("<a>")
+                    .attr({
+                        class: "dropdown-item",
+                        href: "#",
+                    })
+                    .text("layer " + i)
+                    .data({ layer: i })
+                    .click(function() {
+                        var layer = $(this).data("layer");
+                        console.log(layer);
+                        $layerControl.find(".layerDropdownDiv").hide();
+                        $div.show();
+                        // $layerControl
+                        //     .find(".layerDropdownDiv")
+                        //     .get()
+                        //     .map((e) => $(e))
+                        //     .filter((e) => e.data("layer") == layer)
+                        //     .forEach((e) => e.show());
+                    })
+                );
+
+                $layerControl.append();
+                return new Layer(
+                    c, { x: 0, y: 0, z: i * layerDistance, isReverse: i % 2 == 1 },
+                    mapP5.loadImage("data/testSet/" + (6 - i) + ".png")
+                );
+            });
         },
 
         setLayerPosition: function(positions) {
@@ -166,7 +232,7 @@ class Layer {
     //     this.position = pos;
     //     this.rotate = 0;
     // }
-    constructor(config, pos) {
+    constructor(config, pos, image = null) {
         this.servoAngles = [0, 0, 0];
         this.size = config.size;
         this.distanceOfServoY = config.distanceOfServoY;
@@ -177,6 +243,8 @@ class Layer {
         //
         this.position = pos;
         this.rotate = 0;
+
+        this.image = image;
     }
     setPosition(position) {
         this.position.x = position.x;
@@ -201,11 +269,28 @@ class Layer {
         p.noFill();
         p.stroke(0);
         p.push(); {
+            if (this.position.isReverse) {
+                p.rotateZ(p.PI);
+            }
+
             p.translate(0, 0, this.position.z);
             p.push(); {
                 p.translate(this.position.x, this.position.y);
                 p.rotateZ(this.rotate);
                 p.rect(-this.size.x / 2, -this.size.y / 2, this.size.x, this.size.y);
+                if (this.image != null) {
+                    p.push();
+                    if (this.position.isReverse) {
+                        p.rotateZ(p.PI);
+                    }
+                    p.scale(1, -1, 1);
+                    p.image(
+                        this.image, -this.size.x / 2, -this.size.y / 2,
+                        this.size.x,
+                        this.size.y
+                    );
+                    p.pop();
+                }
                 p.line(-this.size.x / 2 + 10,
                     servoYRail,
                     this.size.x / 2 - 10,

@@ -13,4 +13,6 @@ public class ServoConfig extends AbstractConfig {
   public double yOfServoX = 70;
   /** 0で30度の位置が真ん中 数値を増やすとその分だけサーボがパネルから離れます */
   public double positionOffset = 10;
+  /** サーボのデフォルトアングルを設定します */
+  public String defaultAngleFile;
 }

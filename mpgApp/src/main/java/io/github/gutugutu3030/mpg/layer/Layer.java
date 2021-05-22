@@ -146,7 +146,7 @@ public class Layer {
   /**
    * 現在の座標と角度を取得します
    *
-   * @return 座標と角度のペア
+   * @return {レイヤ座標, {レイヤ傾き, [Y軸サーボ角度(左), Y軸サーボ角度(右), X軸サーボ角度,]}}
    */
   public Pair<Vector, Pair<Double, List<Double>>> get() {
     return new Pair<>(
@@ -159,7 +159,7 @@ public class Layer {
   /**
    * レイヤ情報のOSCメッセージを作成します
    *
-   * @return
+   * @return レイヤ情報OSCメッセージ
    */
   public LayerInfoOscMessage getInfoOscMessage() {
     return new LayerInfoOscMessage(
