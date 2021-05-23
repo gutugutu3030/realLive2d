@@ -78,6 +78,15 @@ $(function() {
                     targetRefPoint = $.slider2d.find(
                         (e) => getRefPXY(e).dist(mouse) < refPointR
                     );
+                    if (targetRefPoint != null) {
+                        $("#layer-control input")
+                            .get()
+                            .forEach((e, i) => {
+                                if (targetRefPoint.layer.length > i) {
+                                    $(e).val(targetRefPoint.layer[i]);
+                                }
+                            });
+                    }
 
                     return;
                 }

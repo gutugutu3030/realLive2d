@@ -234,6 +234,25 @@ $(function() {
         URL.revokeObjectURL(url);
     });
 
+    $("#load-layer-slider2d").on("click", function() {
+        $("#load-layer-slider2d-input").click();
+    });
+
+    $("#load-layer-slider2d-input").on("change", function(e) {
+        var reader = new FileReader();
+        reader.onload = function(event) {
+            $.slider2d = JSON.parse(event.target.result);
+            var slider2d = $.slider2d.flatMap((e) => [e.x, e.y, e.layer.length].concat(e.layer));
+            slider2d.unshift($.slider2d.length);
+            $.sendToServer(
+                "/setSlider2d",
+                slider2d.map((e) => "f").join(""),
+                slider2d
+            );
+        };
+        reader.readAsText(e.target.files[0]);
+    });
+
     // スライダリスナ登録
     Array(512)
         .fill()

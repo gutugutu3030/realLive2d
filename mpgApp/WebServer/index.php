@@ -92,6 +92,7 @@ $title = "art";
                             <div>
                                 <button type="button" class="btn btn-primary" id="save-layer-slider2d">Save</button>
                                 <button type="button" class="btn btn-primary" id="load-layer-slider2d">Load</button>
+                                <input id="load-layer-slider2d-input" type="file" style="display: none;"/>
                             </div>
                         </div>
                     </div>
