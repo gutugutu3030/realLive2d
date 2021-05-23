@@ -11,9 +11,9 @@ import io.github.gutugutu3030.websocket.WebsocketConfig;
 /** コンフィグ */
 public class Config extends AbstractConfig {
   public WebsocketConfig websocket;
-  public OscConfig osc;
-  public ServoConfig servo;
+  // public OscConfig osc;
   public PanelConfig panel;
+  public ServoConfig servo;
   public MovementConstraintsConfig movementConstraints;
   public InterpolationConfig interpolation;
 }

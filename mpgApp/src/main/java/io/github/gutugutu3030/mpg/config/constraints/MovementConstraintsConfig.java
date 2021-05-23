@@ -20,7 +20,7 @@ public class MovementConstraintsConfig extends AbstractConfig {
    * 制約条件に移動量を傾きがあっているか調べます
    *
    * @param position 移動量
-   * @param angle    回転量
+   * @param angle 回転量
    * @return 制約をみたしているか
    */
   public boolean met(Vector position, double angle) {
@@ -29,7 +29,7 @@ public class MovementConstraintsConfig extends AbstractConfig {
 
   /**
    * 角度から平行移動可能な移動最大量を求めます
-   * 
+   *
    * @param angle 角度(rad)
    * @return 平行移動可能な移動最大量
    */
@@ -56,7 +56,7 @@ public class MovementConstraintsConfig extends AbstractConfig {
 
   /**
    * -1から1でスケールされた各種値を実際の数値に変換します.
-   * 
+   *
    * @param x[-1~1]
    * @param y[-1~1]
    * @param angle[-1~1]

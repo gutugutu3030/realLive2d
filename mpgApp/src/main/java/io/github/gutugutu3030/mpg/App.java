@@ -3,6 +3,8 @@
  */
 package io.github.gutugutu3030.mpg;
 
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import io.github.gutugutu3030.config.ConfigReader;
 import io.github.gutugutu3030.mpg.config.Config;
 import io.github.gutugutu3030.mpg.layer.Layer;
@@ -17,7 +19,6 @@ import io.github.gutugutu3030.osc.OscMethodType;
 import io.github.gutugutu3030.pi.PCA9685;
 import io.github.gutugutu3030.util.Vector;
 import io.github.gutugutu3030.websocket.OscWebSocketServer;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,10 +28,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,13 +44,28 @@ public class App extends Thread {
    */
   public static void main(String[] args) {
     log.info("args:{}", Arrays.toString(args));
-    Path configDir = (args.length > 0) ? Paths.get(args[0], "launch" //
-        , Optional.of(args).filter(a -> a.length > 1).map(a -> a[1]).orElse("default") //
-        , "config.yaml") : Paths.get(System.getProperty("user.dir"), "launch" //
-            , Optional.of(args).filter(a -> a.length > 0).map(a -> a[0]).orElse("default") //
-            , "config.yaml");
+    Path configDir =
+        (args.length > 0)
+            ? Paths.get(
+                args[0],
+                "launch" //
+                ,
+                Optional.of(args).filter(a -> a.length > 1).map(a -> a[1]).orElse("default") //
+                ,
+                "config.yaml")
+            : Paths.get(
+                System.getProperty("user.dir"),
+                "launch" //
+                ,
+                Optional.of(args).filter(a -> a.length > 0).map(a -> a[0]).orElse("default") //
+                ,
+                "config.yaml");
     log.info("config:{}", configDir);
-    new App(ConfigReader.readConfig(configDir).filter(Config.class::isInstance).map(Config.class::cast).orElseThrow())
+    new App(
+            ConfigReader.readConfig(configDir)
+                .filter(Config.class::isInstance)
+                .map(Config.class::cast)
+                .orElseThrow())
         .start();
   }
 
@@ -85,21 +97,33 @@ public class App extends Thread {
     log.info("constructor ok.");
     // サーボi2c
     pca9685 = new PCA9685(config.servo.PCA9685Channels);
-    layers = IntStream.range(0, config.panel.num).mapToObj(i -> new Layer(config, i % 2 == 1))
-        .collect(Collectors.toList());
+    layers =
+        IntStream.range(0, config.panel.num)
+            .mapToObj(i -> new Layer(config, i % 2 == 1))
+            .collect(Collectors.toList());
 
-    Optional.ofNullable(config.servo.defaultAngleFile).filter(Predicate.not(String::isBlank)).map(file -> {
-      CsvMapper mapper = new CsvMapper();
-      CsvSchema schema = mapper.schemaFor(ServoOffset.class).withHeader();
-      try {
-        return mapper.readerFor(ServoOffset.class).with(schema)
-            .<ServoOffset>readValues(config.path.getParent().resolve(file).toFile()).readAll();
-      } catch (IOException e) {
-        log.error("cannot read csv", e);
-      }
-      return null;
-    }).ifPresent(
-        l -> l.stream().filter(i -> i.layer < layers.size()).forEach(i -> layers.get(i.layer).setServoOffset(i)));
+    Optional.ofNullable(config.servo.defaultAngleFile)
+        .filter(Predicate.not(String::isBlank))
+        .map(
+            file -> {
+              CsvMapper mapper = new CsvMapper();
+              CsvSchema schema = mapper.schemaFor(ServoOffset.class).withHeader();
+              try {
+                return mapper
+                    .readerFor(ServoOffset.class)
+                    .with(schema)
+                    .<ServoOffset>readValues(config.path.getParent().resolve(file).toFile())
+                    .readAll();
+              } catch (IOException e) {
+                log.error("cannot read csv", e);
+              }
+              return null;
+            })
+        .ifPresent(
+            l ->
+                l.stream()
+                    .filter(i -> i.layer < layers.size())
+                    .forEach(i -> layers.get(i.layer).setServoOffset(i)));
 
     slider2d = new Slider2d(config);
   }
@@ -111,7 +135,11 @@ public class App extends Thread {
 
     while (true) {
       sleep(10);
-      pca9685.write(layers.stream().map(Layer::getPWMList).flatMap(List::stream).collect(Collectors.toList()));
+      pca9685.write(
+          layers.stream()
+              .map(Layer::getPWMList)
+              .flatMap(List::stream)
+              .collect(Collectors.toList()));
     }
   }
 
@@ -134,9 +162,8 @@ public class App extends Thread {
   /**
    * レイヤのポジションを設定します。<br>
    * 角度は-15度から15度を-1から1に変換したものとなり、平行移動量はその角度での移動可能な量を-1から1にスケールした値で指定します
-   * 
-   * @param data [layer1'sX(-1 ~ 1), layer1'sY(-1 ~ 1), layer1'sAngle(-1 ~ 1),
-   *             ...]
+   *
+   * @param data [layer1'sX(-1 ~ 1), layer1'sY(-1 ~ 1), layer1'sAngle(-1 ~ 1), ...]
    */
   @OscMethod(addr = "/setLayerScaled")
   public void setLayersScaledPosition(List<Float> data) {
@@ -152,8 +179,8 @@ public class App extends Thread {
   /**
    * レイヤのポジションを一括して設定します
    *
-   * @param x     レイヤX (mm)
-   * @param y     レイヤY (mm)
+   * @param x レイヤX (mm)
+   * @param y レイヤY (mm)
    * @param angle 傾き (radians)
    */
   @OscMethod(addr = "/setCommonPosition")
@@ -172,67 +199,90 @@ public class App extends Thread {
   public void setFaceLookingPosition(float x, float y) {
     this.slider2d.getData(x, y);
     setLayersScaledPosition(
-        this.slider2d.getData(x, y).stream().map(d -> (float) (double) d).collect(Collectors.toList()));
+        this.slider2d.getData(x, y).stream()
+            .map(d -> (float) (double) d)
+            .collect(Collectors.toList()));
   }
 
   /**
    * サーボのアングルを設定します
-   * 
+   *
    * @param data
    */
   @OscMethod(addr = "/setServoAngles", using = OscMethodType.WEBSOCKET)
   public void setServoAngles(List<Float> data) {
-    IntStream.range(0, data.size() / 3).forEach(i -> {
-      if (layers.size() > i) {
-        layers.get(i).setServoAngles((float) data.get(i * 3), (float) data.get(i * 3 + 1), (float) data.get(i * 3 + 2));
-      }
-    });
+    IntStream.range(0, data.size() / 3)
+        .forEach(
+            i -> {
+              if (layers.size() > i) {
+                layers
+                    .get(i)
+                    .setServoAngles(
+                        (float) data.get(i * 3),
+                        (float) data.get(i * 3 + 1),
+                        (float) data.get(i * 3 + 2));
+              }
+            });
     this.getServoAngles();
   }
 
   /**
    * サーボのデフォルトアングル（オフセット）を設定します
-   * 
+   *
    * @param data
    */
   @OscMethod(addr = "/setServoDefaultAngles", using = OscMethodType.WEBSOCKET)
   public void setServoDefaultAngles(List<Float> data) {
-    IntStream.range(0, data.size() / 3).forEach(i -> {
-      if (layers.size() > i) {
-        layers.get(i).setServoDefaultAngles((float) data.get(i * 3), (float) data.get(i * 3 + 1),
-            (float) data.get(i * 3 + 2));
-      }
-    });
+    IntStream.range(0, data.size() / 3)
+        .forEach(
+            i -> {
+              if (layers.size() > i) {
+                layers
+                    .get(i)
+                    .setServoDefaultAngles(
+                        (float) data.get(i * 3),
+                        (float) data.get(i * 3 + 1),
+                        (float) data.get(i * 3 + 2));
+              }
+            });
   }
 
-  /**
-   * サーボのデフォルトアングル（オフセット）をConfigに書かれたパスのファイルに保存します
-   */
+  /** サーボのデフォルトアングル（オフセット）をConfigに書かれたパスのファイルに保存します */
   @OscMethod(addr = "/saveServoDefaultAngles", using = OscMethodType.WEBSOCKET)
   public void saveServoDefaultAngles() {
 
-    List<ServoOffset> newServoOffset = IntStream.range(0, layers.size()).boxed()
-        .flatMap(
-            i -> layers.get(i).getServoDefaultAngles().stream().map(p -> new ServoOffset(i, p.getKey(), p.getValue())))
-        .collect(Collectors.toList());
+    List<ServoOffset> newServoOffset =
+        IntStream.range(0, layers.size())
+            .boxed()
+            .flatMap(
+                i ->
+                    layers.get(i).getServoDefaultAngles().stream()
+                        .map(p -> new ServoOffset(i, p.getKey(), p.getValue())))
+            .collect(Collectors.toList());
 
     log.debug("new servoOffset:{}", newServoOffset);
 
-    Optional.ofNullable(config.servo.defaultAngleFile).filter(Predicate.not(String::isBlank)).ifPresent(file -> {
-      CsvMapper mapper = new CsvMapper();
-      CsvSchema schema = mapper.schemaFor(ServoOffset.class).withHeader().withColumnSeparator(',');
-      try {
-        mapper.writer(schema).writeValue(config.path.getParent().resolve(file).toFile(), newServoOffset);
-        log.info("save servo default angles");
-      } catch (IOException e) {
-        log.error("cannot write csv", e);
-      }
-    });
+    Optional.ofNullable(config.servo.defaultAngleFile)
+        .filter(Predicate.not(String::isBlank))
+        .ifPresent(
+            file -> {
+              CsvMapper mapper = new CsvMapper();
+              CsvSchema schema =
+                  mapper.schemaFor(ServoOffset.class).withHeader().withColumnSeparator(',');
+              try {
+                mapper
+                    .writer(schema)
+                    .writeValue(config.path.getParent().resolve(file).toFile(), newServoOffset);
+                log.info("save servo default angles");
+              } catch (IOException e) {
+                log.error("cannot write csv", e);
+              }
+            });
   }
 
   /**
    * 2次元補間システムの数値を変更します
-   * 
+   *
    * @param data
    */
   @OscMethod(addr = "/setSlider2d")
@@ -240,9 +290,7 @@ public class App extends Thread {
     Slider2dData.parseFloatList(data).ifPresent(slider2d::set);
   }
 
-  /**
-   * 2次元補間システムの数値をデフォルトに変更します
-   */
+  /** 2次元補間システムの数値をデフォルトに変更します */
   @OscMethod(addr = "/resetSlider2d")
   public void resetSlider2d() {
     this.slider2d.reset();
@@ -251,7 +299,8 @@ public class App extends Thread {
   /** 各種情報を取得します */
   @OscMethod(addr = "/get/info", using = OscMethodType.WEBSOCKET)
   public void getInfo() {
-    webSocketServer.sendOscBundle(new SetLayerPositionOscMessage(layers),
+    webSocketServer.sendOscBundle(
+        new SetLayerPositionOscMessage(layers),
         new LayersInfoOscMessage(layers.stream().map(Layer::getInfoOscMessage)));
   }
 
