@@ -1,0 +1,19 @@
+# 参考→https://rara-world.com/docker-compose-yaml/
+version: "3" # なんかymlの書き方のバージョン？
+services: # 建てるイメージだったりdockerファイルだったり
+  app: # mpgApp java
+    image: gutugutu3030/mpg-app:0.0.1 # gradleで生成されるイメージ
+    ports: # ipを同一化、ポートを転送する
+      - "8080:8080"
+      - "6564:6564"
+    volumes: # ローカルファイルの共有
+      - "./../../:/data"
+    command: /data # 起動引数
+    # devices:
+    #   - "COM7:/dev/ttyUSB0" # https://docs.microsoft.com/ja-jp/virtualization/windowscontainers/deploy-containers/hardware-devices-in-containers
+  apache: # apache php
+    image: php:7.4.19-apache
+    ports: # ipを同一化、ポートを転送する
+      - "80:80"
+    volumes: # ローカルファイルの共有
+      - "./../../WebServer:/var/www/html"

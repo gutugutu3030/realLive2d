@@ -16,4 +16,4 @@ services: # 建てるイメージだったりdockerファイルだったり
     ports: # ipを同一化、ポートを転送する
       - "80:80"
     volumes: # ローカルファイルの共有
-      - "./WebServer:/var/www/html"
+      - "./../../WebServer:/var/www/html"
