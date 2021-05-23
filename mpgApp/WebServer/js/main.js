@@ -79,7 +79,10 @@ $(function() {
 
         ws.onopen = () => {
             setActiveBackground(true);
-            sendBundle([{ address: "/get/info", type: "", args: [] }]);
+            sendBundle([
+                { address: "/get/info", type: "", args: [] },
+                { address: "/getServoDefaultAngles", type: "", args: [] },
+            ]);
         };
 
         ws.onmessage = (receive) => {
@@ -128,6 +131,7 @@ $(function() {
             commands = new Map(
                 new Array( //
                     setLayersInfo, //
+                    setServoDefaultAngles, //
                     console.log, //
                     $.setLayerPosition, // map.js
                     $.setServoAngles // map.js
@@ -139,27 +143,6 @@ $(function() {
         } catch (e) {
             console.error(e);
         }
-    }
-    /**
-     * DMXの値を送信します
-     * @param {Array} dmx dmx値
-     */
-    function sendDMX(args) {
-        send("/set/dmx", args);
-    }
-
-    var $dmxSlider = [...Array(512)].map((_, i) => ({
-        tag: $("*#dmxTag" + i),
-        val: $("*#dmxVal" + i),
-    }));
-
-    /**
-     * DMXタグの数値を設定します
-     * @param {JQueryObject} $tag
-     * @param {int} x
-     */
-    function setDMXTag($tag, x) {
-        $tag.text("  " + x);
     }
 
     /**
@@ -179,6 +162,132 @@ $(function() {
             });
         }
         $.setLayerSettings(config);
+        setLayerControlSlider(config);
+    }
+
+    function setLayerControlSlider(config) {
+        var $layerDropDown = $("#layer-select-list");
+        $layerDropDown.empty();
+        var $layerControl = $("#layer-control");
+        $layerControl.empty();
+        config.map((c, i) => {
+            // スライダの表示
+            var $div = $("<div>").addClass("row");
+            $("<div>")
+                .addClass("col-12")
+                .append($("<label>").text("Layer " + i))
+                .appendTo($div);
+            ["X", "Y", "ANGLE"].forEach((sliderName) => {
+                $("<div>")
+                    .addClass("col-12")
+                    .append($("<label>").text(sliderName))
+                    .appendTo($div);
+                var $input = $("<input data-rangeSlider>")
+                    .attr({
+                        type: "range",
+                        style: "width:100%;",
+                        min: -1.0,
+                        max: +1.0,
+                        step: 0.001,
+                    })
+                    .val(0);
+                $input.on("input", function() {
+                    var list = $.getLayerScaledPositionFromSlider();
+                    var bundle = [{
+                        address: "/setLayerScaled",
+                        type: list.map((e) => "f").join(""),
+                        args: list,
+                    }, ];
+                    if ($.updateScaledPosition(list)) {
+                        var slider2d = $.slider2d.flatMap((e) => [e.x, e.y, e.layer.length].concat(e.layer));
+                        slider2d.unshift($.slider2d.length);
+                        console.log(slider2d);
+                        bundle.push({
+                            address: "/setSlider2d",
+                            type: slider2d.map((e) => "f").join(""),
+                            args: slider2d,
+                        });
+                    }
+                    $.sendBundleToServer(bundle);
+                });
+                $("<div>").addClass("col-12").append($input).appendTo($div);
+            });
+            $layerControl.append($div);
+            if (i != 0) {
+                $div.hide();
+            }
+            $div.addClass("layerDropdownDiv");
+            $div.css("width", "100%");
+            $div.data({ layer: i });
+            // ドロップダウンリスト
+            $layerDropDown.append(
+                $("<a>")
+                .attr({
+                    class: "dropdown-item",
+                    href: "#",
+                })
+                .text("layer " + i)
+                .data({ layer: i })
+                .click(function() {
+                    $layerControl.find(".layerDropdownDiv").hide();
+                    $div.show();
+                })
+            );
+            $layerControl.append();
+        });
+    }
+
+    function setServoDefaultAngles(args) {
+        var offset = [];
+        for (var i = 0; i < args.length / 3; i++) {
+            offset.push({
+                Y1: args[i * 3],
+                Y2: args[i * 3 + 1],
+                X: args[i * 3 + 2],
+            });
+        }
+
+        var $servoOffset = $("#servo-offset-slider");
+        $servoOffset.empty();
+        offset.map((c, i) => {
+            // スライダの表示
+            var $div = $("<div>").addClass("row");
+            $("<div>")
+                .addClass("col-12")
+                .append($("<label>").text("Layer " + i))
+                .appendTo($div);
+            ["Y1", "Y2", "X"].forEach((sliderName) => {
+                $("<div>")
+                    .addClass("col-2")
+                    .append($("<label>").text(sliderName))
+                    .appendTo($div);
+                var $input = $("<input data-rangeSlider>")
+                    .attr({
+                        class: "col-10",
+                        type: "range",
+                        style: "width:100%;",
+                        min: 0,
+                        max: Math.PI / 10,
+                        step: 0.001,
+                    })
+                    .val(c[sliderName]);
+                $input
+                    .on("input", function() {
+                        var data = $("#servo-offset-slider input")
+                            .get()
+                            .map((e) => parseFloat($(e).val()));
+                        $.sendToServer(
+                            "/setServoAngles",
+                            data.map((e) => "f").join(""),
+                            data
+                        );
+                    })
+                    .appendTo($div);
+            });
+            $servoOffset.append($div);
+            $div.css("width", "100%");
+            $div.data({ layer: i });
+        });
     }
 
     /**
@@ -253,18 +362,37 @@ $(function() {
         reader.readAsText(e.target.files[0]);
     });
 
-    // スライダリスナ登録
-    Array(512)
-        .fill()
-        .map((_, i) => i) //
-        .forEach((i) => {
-            var $self = $("#dmxVal" + i);
-            $self.val(0);
-            $self.on("input", function() {
-                // スライダからの入力時
-                $.dmx[i] = parseInt($self.val());
-                setDMXTag($dmxSlider[i].tag, $.dmx[i]);
-                sendDMX($.dmx);
-            });
-        });
+    $("#set-servo-offset").on("click", function() {
+        var data = $("#servo-offset-slider input")
+            .get()
+            .map((e) => parseFloat($(e).val()));
+        $.sendToServer(
+            "/setServoDefaultAngles",
+            data.map((e) => "f").join(""),
+            data
+        );
+    });
+
+    $("#reset-servo-offset").on("click", function() {
+        $.sendToServer("/getServoDefaultAngles", "", []);
+    });
+
+    $("#save-servo-offset").on("click", function() {
+        if (confirm("今までの数値が削除されます。本当によろしいですか？")) {
+            var data = $("#servo-offset-slider input")
+                .get()
+                .map((e) => parseFloat($(e).val()));
+            $.sendBundleToServer([{
+                    address: "/setServoDefaultAngles",
+                    type: data.map((e) => "f").join(""),
+                    args: data,
+                },
+                {
+                    address: "/saveServoDefaultAngles",
+                    type: "",
+                    args: [],
+                },
+            ]);
+        }
+    });
 });

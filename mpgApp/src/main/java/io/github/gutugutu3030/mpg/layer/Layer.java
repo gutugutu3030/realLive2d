@@ -3,11 +3,15 @@ package io.github.gutugutu3030.mpg.layer;
 import io.github.gutugutu3030.mpg.config.Config;
 import io.github.gutugutu3030.mpg.config.constraints.MovementConstraintsConfig;
 import io.github.gutugutu3030.mpg.layer.servo.Servo;
+import io.github.gutugutu3030.mpg.layer.servo.ServoOffset;
 import io.github.gutugutu3030.mpg.message.LayerInfoOscMessage;
 import io.github.gutugutu3030.util.Pair;
 import io.github.gutugutu3030.util.Vector;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
@@ -151,6 +155,57 @@ public class Layer {
   }
 
   /**
+   * サーボのデフォルトアングル（オフセット）を取得します
+   * 
+   * @return オフセットリスト
+   */
+  public List<Pair<String, Double>> getServoDefaultAngles() {
+    Function<Object, String> getFieldName = o -> {
+      try {
+        return Arrays.stream(this.getClass().getDeclaredFields()).filter(f -> {
+          try {
+            f.setAccessible(true);
+            return f.get(this) == o;
+          } catch (Exception e) {
+            return false;
+          }
+        }).findAny().map(f -> f.getName()).orElse("");
+      } catch (Exception e) {
+        return "";
+      }
+    };
+
+    return Stream.of(servoY1, servoY2, servoX).map(s -> new Pair<>(getFieldName.apply(s), s.getDefaultAngle()))
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * サーボのデフォルトアングル（オフセット）を設定します
+   * 
+   * @param y1
+   * @param y2
+   * @param x
+   */
+  public void setServoDefaultAngles(double y1, double y2, double x) {
+    servoY1.setDefaultAngle(y1);
+    servoY2.setDefaultAngle(y2);
+    servoX.setDefaultAngle(x);
+  }
+
+  /**
+   * サーボのアングルを補正なしで設定します
+   * 
+   * @param y1
+   * @param y2
+   * @param x
+   */
+  public void setServoAngles(double y1, double y2, double x) {
+    servoY1.setAngle(y1 - servoY1.getDefaultAngle());
+    servoY2.setAngle(y2 - servoY2.getDefaultAngle());
+    servoX.setAngle(x - servoX.getDefaultAngle());
+  }
+
+  /**
    * レイヤ情報のOSCメッセージを作成します
    *
    * @return レイヤ情報OSCメッセージ
@@ -171,6 +226,26 @@ public class Layer {
   public void setScaledPosition(Float x, Float y, Float angle) {
     Optional.of(this.movementConstraints.mapScaledPosition(x, y, angle))
         .ifPresent(p -> this.set(p.getKey(), p.getValue()));
+  }
+
+  /**
+   * サーボのデフォルトアングルを設定します
+   * 
+   * @param offset サーボオフセット情報
+   */
+  public void setServoOffset(ServoOffset offset) {
+    try {
+      Optional.ofNullable(this.getClass().getDeclaredField(offset.servo)).map(f -> {
+        try {
+          f.setAccessible(true);
+          return f.get(this);
+        } catch (Exception e) {
+          return null;
+        }
+      }).filter(Servo.class::isInstance).map(Servo.class::cast).ifPresent(s -> s.setDefaultAngle(offset.defautAngle));
+    } catch (Exception e) {
+      log.warn("cannot set servo offset.", e);
+    }
   }
 
   /** サーボの回転軸座標をセットします */

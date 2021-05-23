@@ -26,7 +26,7 @@ $title = "art";
                         <a class="nav-link active" data-toggle="tab" href="#preview">プレビュー</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#setting">設定</a>
+                        <a class="nav-link" data-toggle="tab" href="#servo-offset">サーボオフセット</a>
                     </li>
                 </ul>
                 <div id="main-tabs" class="tab-content">
@@ -56,8 +56,12 @@ $title = "art";
                         <div id="map-canvas"></div>
                         <p id="position-p">Common: (0,0) rotate=0</p>
                     </div>
-                    <div class="tab-pane fade" id="setting">
-                        <p>昔しの書生は、笈を負ひて四方に遊歴し、此人ならばと思ふ先生の許に落付く、故に先生を敬ふ事、父兄に過ぎたり、先生も亦弟子に対する事、真の子の如し、是でなくては真の教育といふ事は出来ぬなり、今の書生は学校を旅屋の如く思ふ、金を出して暫らく逗留するに過ぎず、厭になればすぐに宿を移す、かゝる生徒に対する校長は、宿屋の主人の如く、教師は番頭丁稚なり、主人たる校長すら、時には御客の機嫌を取らねばならず、況んや番頭丁稚をや、薫陶所か解雇されざるを以て幸福と思ふ位なり、生徒の増長し教員の下落するは当前の事なり。</p>
+                    <div class="tab-pane fade" id="servo-offset">
+                        <div id="servo-offset-slider">
+                        </div>
+                        <button type="button" class="btn btn-primary" id="set-servo-offset">Set</button>
+                        <button type="button" class="btn btn-warning" id="reset-servo-offset">Reset</button>
+                        <button type="button" class="btn btn-danger" id="save-servo-offset">Save</button>
                     </div>
                 </div>
             </div>

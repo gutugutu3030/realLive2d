@@ -113,75 +113,7 @@ $(function() {
         },
 
         setLayerSettings: function(layersConfig) {
-            var $layerDropDown = $("#layer-select-list");
-            $layerDropDown.empty();
-            var $layerControl = $("#layer-control");
-            $layerControl.empty();
             layers = layersConfig.map((c, i) => {
-                // スライダの表示
-                var $div = $("<div>").addClass("row");
-                $("<div>")
-                    .addClass("col-12")
-                    .append($("<label>").text("Layer " + i))
-                    .appendTo($div);
-                ["X", "Y", "ANGLE"].forEach((sliderName) => {
-                    $("<div>")
-                        .addClass("col-12")
-                        .append($("<label>").text(sliderName))
-                        .appendTo($div);
-                    var $input = $("<input data-rangeSlider>")
-                        .attr({
-                            type: "range",
-                            style: "width:100%;",
-                            min: -1.0,
-                            max: +1.0,
-                            step: 0.001,
-                        })
-                        .val(0);
-                    $input.on("input", function() {
-                        var list = $.getLayerScaledPositionFromSlider();
-                        var bundle = [{
-                            address: "/setLayerScaled",
-                            type: list.map((e) => "f").join(""),
-                            args: list,
-                        }, ];
-                        if ($.updateScaledPosition(list)) {
-                            var slider2d = $.slider2d.flatMap((e) => [e.x, e.y, e.layer.length].concat(e.layer));
-                            slider2d.unshift($.slider2d.length);
-                            console.log(slider2d);
-                            bundle.push({
-                                address: "/setSlider2d",
-                                type: slider2d.map((e) => "f").join(""),
-                                args: slider2d,
-                            });
-                        }
-                        $.sendBundleToServer(bundle);
-                    });
-                    $("<div>").addClass("col-12").append($input).appendTo($div);
-                });
-                $layerControl.append($div);
-                if (i != 0) {
-                    $div.hide();
-                }
-                $div.addClass("layerDropdownDiv");
-                $div.css("width", "100%");
-                $div.data({ layer: i });
-                // ドロップダウンリスト
-                $layerDropDown.append(
-                    $("<a>")
-                    .attr({
-                        class: "dropdown-item",
-                        href: "#",
-                    })
-                    .text("layer " + i)
-                    .data({ layer: i })
-                    .click(function() {
-                        $layerControl.find(".layerDropdownDiv").hide();
-                        $div.show();
-                    })
-                );
-
-                $layerControl.append();
                 return new Layer(
                     c, { x: 0, y: 0, z: i * layerDistance, isReverse: i % 2 == 1 },
                     mapP5.loadImage("data/testSet/" + (6 - i) + ".png")

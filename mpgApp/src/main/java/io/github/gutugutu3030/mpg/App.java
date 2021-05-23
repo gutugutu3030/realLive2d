@@ -6,8 +6,10 @@ package io.github.gutugutu3030.mpg;
 import io.github.gutugutu3030.config.ConfigReader;
 import io.github.gutugutu3030.mpg.config.Config;
 import io.github.gutugutu3030.mpg.layer.Layer;
+import io.github.gutugutu3030.mpg.layer.servo.ServoOffset;
 import io.github.gutugutu3030.mpg.message.LayersInfoOscMessage;
 import io.github.gutugutu3030.mpg.message.SetLayerPositionOscMessage;
+import io.github.gutugutu3030.mpg.message.SetServoDefaultAnglesOscMessage;
 import io.github.gutugutu3030.mpg.slider2d.Slider2d;
 import io.github.gutugutu3030.mpg.slider2d.Slider2dData;
 import io.github.gutugutu3030.osc.OscMethod;
@@ -15,13 +17,20 @@ import io.github.gutugutu3030.osc.OscMethodType;
 import io.github.gutugutu3030.pi.PCA9685;
 import io.github.gutugutu3030.util.Vector;
 import io.github.gutugutu3030.websocket.OscWebSocketServer;
+
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +87,20 @@ public class App extends Thread {
     pca9685 = new PCA9685(config.servo.PCA9685Channels);
     layers = IntStream.range(0, config.panel.num).mapToObj(i -> new Layer(config, i % 2 == 1))
         .collect(Collectors.toList());
+
+    Optional.ofNullable(config.servo.defaultAngleFile).filter(Predicate.not(String::isBlank)).map(file -> {
+      CsvMapper mapper = new CsvMapper();
+      CsvSchema schema = mapper.schemaFor(ServoOffset.class).withHeader();
+      try {
+        return mapper.readerFor(ServoOffset.class).with(schema)
+            .<ServoOffset>readValues(config.path.getParent().resolve(file).toFile()).readAll();
+      } catch (IOException e) {
+        log.error("cannot read csv", e);
+      }
+      return null;
+    }).ifPresent(
+        l -> l.stream().filter(i -> i.layer < layers.size()).forEach(i -> layers.get(i.layer).setServoOffset(i)));
+
     slider2d = new Slider2d(config);
   }
 
@@ -153,6 +176,61 @@ public class App extends Thread {
   }
 
   /**
+   * サーボのアングルを設定します
+   * 
+   * @param data
+   */
+  @OscMethod(addr = "/setServoAngles", using = OscMethodType.WEBSOCKET)
+  public void setServoAngles(List<Float> data) {
+    IntStream.range(0, data.size() / 3).forEach(i -> {
+      if (layers.size() > i) {
+        layers.get(i).setServoAngles((float) data.get(i * 3), (float) data.get(i * 3 + 1), (float) data.get(i * 3 + 2));
+      }
+    });
+    this.getServoAngles();
+  }
+
+  /**
+   * サーボのデフォルトアングル（オフセット）を設定します
+   * 
+   * @param data
+   */
+  @OscMethod(addr = "/setServoDefaultAngles", using = OscMethodType.WEBSOCKET)
+  public void setServoDefaultAngles(List<Float> data) {
+    IntStream.range(0, data.size() / 3).forEach(i -> {
+      if (layers.size() > i) {
+        layers.get(i).setServoDefaultAngles((float) data.get(i * 3), (float) data.get(i * 3 + 1),
+            (float) data.get(i * 3 + 2));
+      }
+    });
+  }
+
+  /**
+   * サーボのデフォルトアングル（オフセット）をConfigに書かれたパスのファイルに保存します
+   */
+  @OscMethod(addr = "/saveServoDefaultAngles", using = OscMethodType.WEBSOCKET)
+  public void saveServoDefaultAngles() {
+
+    List<ServoOffset> newServoOffset = IntStream.range(0, layers.size()).boxed()
+        .flatMap(
+            i -> layers.get(i).getServoDefaultAngles().stream().map(p -> new ServoOffset(i, p.getKey(), p.getValue())))
+        .collect(Collectors.toList());
+
+    log.debug("new servoOffset:{}", newServoOffset);
+
+    Optional.ofNullable(config.servo.defaultAngleFile).filter(Predicate.not(String::isBlank)).ifPresent(file -> {
+      CsvMapper mapper = new CsvMapper();
+      CsvSchema schema = mapper.schemaFor(ServoOffset.class).withHeader().withColumnSeparator(',');
+      try {
+        mapper.writer(schema).writeValue(config.path.getParent().resolve(file).toFile(), newServoOffset);
+        log.info("save servo default angles");
+      } catch (IOException e) {
+        log.error("cannot write csv", e);
+      }
+    });
+  }
+
+  /**
    * 2次元補間システムの数値を変更します
    * 
    * @param data
@@ -181,6 +259,12 @@ public class App extends Thread {
   @OscMethod(addr = "/get/servoAngles", using = OscMethodType.WEBSOCKET)
   public void getServoAngles() {
     webSocketServer.sendOscMessage(new SetLayerPositionOscMessage(layers));
+  }
+
+  /** サーボの角度を取得します */
+  @OscMethod(addr = "/getServoDefaultAngles", using = OscMethodType.WEBSOCKET)
+  public void getServoDefaultAngles() {
+    webSocketServer.sendOscMessage(new SetServoDefaultAnglesOscMessage(layers));
   }
 
   /**
