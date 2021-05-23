@@ -44,7 +44,15 @@ $title = "art";
                             <label class="btn btn-info">
                             <input type="radio" name="options" autocomplete="off" value="3"> 操作
                             </label>
-                        </div>
+                        </div>                        
+                        <div class="row">
+                                <div class="col-4">
+                                    <label>傾き(-15度 ~ 15度)</label>
+                                </div>                    
+                                <div class="col-8">
+                                    <input id="slider-angle" type="range" style="width:100%;" min="<?php echo - M_PI / 12?>" max="<?php echo M_PI / 12?>" step="0.001" data-rangeSlider title="">
+                                </div> 
+                            </div>
                         <div id="map-canvas"></div>
                         <p id="position-p">Common: (0,0) rotate=0</p>
                     </div>
@@ -67,17 +75,6 @@ $title = "art";
                 <div id="sub-tabs" class="tab-content">
                     <div class="tab-pane fade show active" id="parameter">
                         <div class="mt-3 overflow-auto">
-                            <div class="row">
-                                <div class="col-12">
-                                    <label>傾き(-15度 ~ 15度)</label>
-                                </div>                    
-                                <div class="col-10">
-                                    <input id="slider-angle" type="range" style="width:100%;" min="<?php echo - M_PI / 12?>" max="<?php echo M_PI / 12?>" step="0.001" data-rangeSlider title="">
-                                </div>                   
-                                <div class="col-2">
-                                    <p id="tag-angle">---</p>
-                                </div>
-                            </div>
                             <div id="slider2d"  oncontextmenu="return false;"></div>
                             <div class="dropdown">
                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="layer-select" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

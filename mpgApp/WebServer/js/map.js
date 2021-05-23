@@ -164,6 +164,7 @@ $(function() {
                     $div.hide();
                 }
                 $div.addClass("layerDropdownDiv");
+                $div.css("width", "100%");
                 $div.data({ layer: i });
                 // ドロップダウンリスト
                 $layerDropDown.append(
