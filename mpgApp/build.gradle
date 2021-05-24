@@ -77,7 +77,7 @@ jib {
     }
   }
   to {
-    image = "gutugutu3030/mpg-app:0.0.1"    
+    image = "gutugutu3030/mpg-app:0.0.2"    
   }
 }
 

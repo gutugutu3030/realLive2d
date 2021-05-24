@@ -2,7 +2,7 @@
 version: "3" # なんかymlの書き方のバージョン？
 services: # 建てるイメージだったりdockerファイルだったり
   app: # mpgApp java
-    image: gutugutu3030/mpg-app:0.0.1 # gradleで生成されるイメージ
+    image: gutugutu3030/mpg-app:0.0.2 # gradleで生成されるイメージ
     ports: # ipを同一化、ポートを転送する
       - "8080:8080"
       - "6564:6564"
