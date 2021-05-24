@@ -75,7 +75,7 @@ $(function() {
      * Websocketを開始します
      */
     function connectWebSocket() {
-        ws = new WebSocket("ws://localhost:8080/gutugutu/art");
+        ws = new WebSocket("ws://" + location.hostname + ":8080/gutugutu/art");
 
         ws.onopen = () => {
             setActiveBackground(true);
