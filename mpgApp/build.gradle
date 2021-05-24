@@ -62,6 +62,12 @@ mainClassName = 'io.github.gutugutu3030.mpg.App'
 sourceCompatibility = javaVersion
 targetCompatibility = javaVersion
 
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
+
 jib {
   from {
     image = "arm64v8/openjdk:11-slim"
