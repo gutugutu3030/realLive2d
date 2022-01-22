@@ -1,5 +1,6 @@
 //cube([100,100,15.8]);
 
+
 servoW=12.6+0.4;
 servoH=23.0+0.4;
     waku=4;
@@ -74,7 +75,7 @@ module servoRect(num, l=0){
 * @deprecated
 */
 module servo4_rect(l){
-    servoRect(4);
+    servoRect(4, l);
 }
 
 module hikkake(l=servoW*4,d=10,fixPos=true,haba=0.8,thin=2,num=4){
