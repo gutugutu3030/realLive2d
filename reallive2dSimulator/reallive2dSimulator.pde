@@ -33,7 +33,7 @@ static final int armL=300;
 Layer layer[];
 
 void setup() {
-  size(2000, 1600+400);
+  size(1500, 1000);
   //  upperLeft=new Servo(servos, 100, 200, -HALF_PI, YOKO2);
   //  upperRight=new Servo(servos, width-100-servoH, 200, PI, YOKO1);
   //  bottomLeft=new Servo(servos, 500, 1200, 0, TATE);
@@ -100,7 +100,8 @@ void setup() {
 
 void draw() {
   pushMatrix();
-  translate(0,400);
+  scale(0.5);
+  translate(400,400);
   background(255);
   //  upperLeft.setAngle(HALF_PI-acos(panelX/armL));
   //  upperRight.setAngle(acos(1-panelX/armL));
@@ -253,4 +254,3 @@ class Servo {
     line(x1, y1, x1+cos(-defaultAngle)*armL, y1+sin(-defaultAngle)*armL);
   }
 }
-
