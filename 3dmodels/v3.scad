@@ -37,7 +37,7 @@ union(){
             rotate([0,0,90])
             servoRect(l=10);
 
-            translate([-11.9,50,0])
+            translate([-8.6,50,0])
             rotate([0,0,-90])
             scale([-1,1,1])
             servoRect(4);
