@@ -1,5 +1,4 @@
 //cube([100,100,15.8]);
-
 servoW=12.6+0.4;
 servoH=23.0+0.4;
     waku=4;
@@ -8,8 +7,8 @@ module servo(){
     cube([12.6+0.4,23.0+0.4,26.7]);
     translate([0,(23.0-32.4)/2,15.8])
     cube([12.6+0.4,32.4,2.4]);
-    translate([(13-4.2)/2,23,-100])
-    cube([4.2,5,18+100]);
+    translate([(13-4.2)/2,23-8,-100])
+    cube([4.2,13,18+100]);
 }
 
 module servos(num){
@@ -83,9 +82,9 @@ module hikkake(l=servoW*4,d=10,fixPos=true,haba=1,thin=2,num=4){
         x=-waku;
     }
     for(i=[1:1+num]){
-        translate([0,-d,(2.4+5)*i+15.8+2.4-thin])
+        translate([0,-d,(2.4+5)*i+15.8+2.4-thin+1.5])
             cube([l,d,thin]);  
-        translate([0,-d,(2.4+5)*i+15.8+2.4+haba])
+        translate([0,-d,(2.4+5)*i+15.8+2.4+haba+1.5])
             cube([l,d,thin]);  
     }
 

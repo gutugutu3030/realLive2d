@@ -1,5 +1,5 @@
-honeH=3;
-honeAllH=4;
+honeH=2;
+honeAllH=3;
 
 module attachedHone(){
     linear_extrude(height = honeH)
