@@ -17,7 +17,7 @@ difference(){
         translate([0,15,0])
         {
             cube([10-0.4,servoH+waku-0.4-15,(2.4+5)*5+15.8+2.4+1+1.15+1.5]);
-            hikkake(l=10-0.4,d=3,thin=1,fixPos=false, haba=1.15
+            hikkake(l=10-0.4,d=3,thin=1,fixPos=false, haba=1.2
 );
         }
         translate([-waku1,-waku1,-1.5])
